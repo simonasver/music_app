@@ -47,7 +47,7 @@ export function YoutubeDownloaderSettings({ settings, onSave }: Props) {
     }
 
     return (
-        <div className="h-full overflow-auto p-6 flex flex-col gap-6 max-w-2xl">
+        <div className="h-full overflow-auto p-6 flex flex-col gap-6">
             <div className="flex flex-col gap-3">
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                     Download Location
