@@ -12,10 +12,18 @@ interface Props {
 }
 
 export function Settings({ settings, onSave }: Props) {
+    async function handleYoutubeDownloaderSave(
+        ytSettings: AppSettingsType["youtubeDownloaderSettings"],
+    ) {
+        const updated = { ...settings, youtubeDownloaderSettings: ytSettings };
+        await window.electronAPI.saveSettings(updated);
+        onSave(updated);
+    }
+
     return (
         <Tabs
             defaultValue={SettingsTab.YoutubeDownloader}
-            className="flex flex-col h-screen bg-background text-foreground"
+            className="flex flex-col h-full bg-background text-foreground"
         >
             <TabsList className="shrink-0 w-full justify-start rounded-none border-b border-border h-auto p-0">
                 <TabsTrigger
@@ -29,7 +37,10 @@ export function Settings({ settings, onSave }: Props) {
                 value={SettingsTab.YoutubeDownloader}
                 className="flex-1 overflow-hidden mt-0"
             >
-                <YoutubeDownloaderSettings settings={settings} onSave={onSave} />
+                <YoutubeDownloaderSettings
+                    settings={settings.youtubeDownloaderSettings}
+                    onSave={handleYoutubeDownloaderSave}
+                />
             </TabsContent>
         </Tabs>
     );

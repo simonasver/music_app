@@ -14,6 +14,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
         ipcRenderer.send("download:cancel");
     },
 
+    getDefaultSettings: (): Promise<AppSettings> => ipcRenderer.invoke("settings:get-defaults"),
+
     selectFolder: (): Promise<string | null> => ipcRenderer.invoke("dialog:select-folder"),
 
     onDownloadOutput: (cb: (line: string) => void): (() => void) => {
