@@ -25,12 +25,12 @@ export function Settings({ settings, onSave }: Props) {
             defaultValue={SettingsTab.YoutubeDownloader}
             className="flex flex-col h-full bg-background text-foreground"
         >
-            <TabsList className="shrink-0 w-full justify-start rounded-none border-b border-border h-auto p-0">
+            <TabsList className="shrink-0 w-full rounded-none border-b border-border h-auto p-1 gap-1 bg-muted/40">
                 <TabsTrigger
                     value={SettingsTab.YoutubeDownloader}
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-6 py-3"
+                    className="flex-1 rounded text-xs font-medium px-3 py-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm text-muted-foreground"
                 >
-                    YouTube Downloader settings
+                    YouTube Downloader
                 </TabsTrigger>
             </TabsList>
             <TabsContent
