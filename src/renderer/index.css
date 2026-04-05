@@ -46,6 +46,21 @@
     --font-mono: var(--font-mono);
 }
 
+@keyframes toast-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@utility animate-toast-in {
+    animation: toast-in 0.15s ease-out;
+}
+
 @layer base {
     * {
         border-color: hsl(var(--border));

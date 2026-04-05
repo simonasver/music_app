@@ -2,6 +2,8 @@ import { useState } from "react";
 import type { AppSettings } from "../../env";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { ConfirmButton } from "@/components/ConfirmButton";
+import { useToast } from "@/lib/toast";
 import { Separator } from "@radix-ui/react-separator";
 import { Label } from "@radix-ui/react-label";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,6 +16,7 @@ interface Props {
 }
 
 export function YoutubeDownloaderSettings({ settings, onSave }: Props) {
+    const toast = useToast();
     const [mp3Config, setMp3Config] = useState(settings.mp3Config);
     const [mp4Config, setMp4Config] = useState(settings.mp4Config);
 
@@ -40,6 +43,7 @@ export function YoutubeDownloaderSettings({ settings, onSave }: Props) {
         setMp3Config(defaultYtSettings.mp3Config);
         setMp4Config(defaultYtSettings.mp4Config);
         onSave(defaultYtSettings);
+        toast.show("Settings reset to defaults");
     }
 
     return (
@@ -101,9 +105,35 @@ export function YoutubeDownloaderSettings({ settings, onSave }: Props) {
             <Separator />
 
             <div>
-                <Button variant="outline" onClick={handleReset}>
+                <ConfirmButton
+                    variant="outline"
+                    confirmText="Reset all settings to defaults?"
+                    confirmLabel="Reset"
+                    onConfirm={handleReset}
+                >
                     Reset to Defaults
-                </Button>
+                </ConfirmButton>
+            </div>
+
+            <Separator />
+
+            <div className="flex flex-col gap-3">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                    History
+                </h2>
+                <div>
+                    <ConfirmButton
+                        variant="destructive"
+                        confirmText="Delete all download history?"
+                        confirmLabel="Delete"
+                        onConfirm={async () => {
+                            await window.electronAPI.deleteAllHistory();
+                            toast.show("History deleted");
+                        }}
+                    >
+                        Delete All History
+                    </ConfirmButton>
+                </div>
             </div>
         </div>
     );
