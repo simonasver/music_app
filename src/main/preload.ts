@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from "electron";
 import type { AppSettings } from "./settingsService";
+import type { HistoryEntry } from "./historyService";
 
 contextBridge.exposeInMainWorld("electronAPI", {
     getSettings: (): Promise<AppSettings> => ipcRenderer.invoke("settings:get"),
@@ -29,4 +30,16 @@ contextBridge.exposeInMainWorld("electronAPI", {
         ipcRenderer.on("download:complete", handler);
         return () => ipcRenderer.removeListener("download:complete", handler);
     },
+
+    appendHistory: (entry: HistoryEntry): Promise<void> =>
+        ipcRenderer.invoke("history:append", entry),
+
+    getAllHistory: (): Promise<HistoryEntry[]> => ipcRenderer.invoke("history:get-all"),
+
+    deleteHistoryEntry: (id: string): Promise<void> =>
+        ipcRenderer.invoke("history:delete-entry", id),
+
+    deleteAllHistory: (): Promise<void> => ipcRenderer.invoke("history:delete-all"),
+
+    openExternal: (url: string): Promise<void> => ipcRenderer.invoke("shell:open-url", url),
 });

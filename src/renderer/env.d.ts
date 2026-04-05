@@ -1,5 +1,11 @@
 /// <reference types="vite/client" />
 
+export interface HistoryEntry {
+    id: string;
+    url: string;
+    date: string;
+}
+
 export interface AppSettings {
     youtubeDownloaderSettings: {
         downloadFileLocation: string;
@@ -19,6 +25,11 @@ declare global {
             selectFolder(): Promise<string | null>;
             onDownloadOutput(cb: (line: string) => void): () => void;
             onDownloadComplete(cb: (code: number | null) => void): () => void;
+            appendHistory(entry: HistoryEntry): Promise<void>;
+            getAllHistory(): Promise<HistoryEntry[]>;
+            deleteHistoryEntry(id: string): Promise<void>;
+            deleteAllHistory(): Promise<void>;
+            openExternal(url: string): Promise<void>;
         };
     }
 }

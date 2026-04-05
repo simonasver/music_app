@@ -1,8 +1,14 @@
-import { app, BrowserWindow, ipcMain, dialog } from "electron";
+import { app, BrowserWindow, ipcMain, dialog, shell } from "electron";
 import path from "node:path";
 import started from "electron-squirrel-startup";
 import { loadSettings, saveSettings, DEFAULTS } from "./settingsService";
 import { startDownload, cancelDownload } from "./downloadService";
+import {
+    appendHistoryEntry,
+    getAllHistory,
+    deleteHistoryEntry,
+    deleteAllHistory,
+} from "./historyService";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -11,8 +17,8 @@ if (started) {
 
 const createWindow = () => {
     const mainWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
+        width: 1200,
+        height: 800,
         center: true,
         autoHideMenuBar: true,
         webPreferences: {
@@ -73,4 +79,10 @@ function registerIpcHandlers() {
         const result = await dialog.showOpenDialog({ properties: ["openDirectory"] });
         return result.canceled ? null : result.filePaths[0];
     });
+
+    ipcMain.handle("history:append", (_event, entry) => appendHistoryEntry(entry));
+    ipcMain.handle("history:get-all", () => getAllHistory());
+    ipcMain.handle("history:delete-entry", (_event, id: string) => deleteHistoryEntry(id));
+    ipcMain.handle("history:delete-all", () => deleteAllHistory());
+    ipcMain.handle("shell:open-url", (_event, url: string) => shell.openExternal(url));
 }
