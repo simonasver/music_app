@@ -11,7 +11,7 @@ export interface AppSettings {
     };
 }
 
-const DEFAULTS: AppSettings = {
+export const DEFAULTS: AppSettings = {
     youtubeDownloaderSettings: {
         downloadFileLocation: path.join(os.homedir(), "Downloads"),
         mp3Config:

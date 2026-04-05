@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import path from "node:path";
 import started from "electron-squirrel-startup";
-import { loadSettings, saveSettings } from "./settingsService";
+import { loadSettings, saveSettings, DEFAULTS } from "./settingsService";
 import { startDownload, cancelDownload } from "./downloadService";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -66,6 +66,8 @@ function registerIpcHandlers() {
     });
 
     ipcMain.on("download:cancel", () => cancelDownload());
+
+    ipcMain.handle("settings:get-defaults", () => DEFAULTS);
 
     ipcMain.handle("dialog:select-folder", async () => {
         const result = await dialog.showOpenDialog({ properties: ["openDirectory"] });
