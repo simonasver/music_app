@@ -3,12 +3,14 @@ import { useTranslation } from "react-i18next";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { YoutubeDownloader } from "@/features/youtubeDownloader/components/YoutubeDownloader";
 import { Settings } from "@/features/settings/components/Settings";
+import { Trimmer } from "@/features/trimmer/components/Trimmer";
 import { ToastProvider } from "@/lib/toast";
 import type { AppSettings as AppSettingsType } from "./env.d";
 import i18n, { detectSystemLanguage } from "./i18n";
 
 enum AppTab {
     YoutubeDownloader = "YoutubeDownloader",
+    Trim = "Trim",
     Settings = "Settings",
 }
 
@@ -43,6 +45,12 @@ export function App() {
                         {t("tabs.youtubeDownloader")}
                     </TabsTrigger>
                     <TabsTrigger
+                        value={AppTab.Trim}
+                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-6 py-3"
+                    >
+                        {t("tabs.trim")}
+                    </TabsTrigger>
+                    <TabsTrigger
                         value={AppTab.Settings}
                         className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-6 py-3"
                     >
@@ -55,6 +63,9 @@ export function App() {
                     forceMount
                 >
                     <YoutubeDownloader settings={settings} />
+                </TabsContent>
+                <TabsContent value={AppTab.Trim} className="flex-1 overflow-auto mt-0">
+                    <Trimmer />
                 </TabsContent>
                 <TabsContent value={AppTab.Settings} className="flex-1 overflow-auto mt-0">
                     <Settings settings={settings} onSave={setSettings} />
