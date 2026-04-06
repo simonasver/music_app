@@ -11,7 +11,19 @@ import {
 import { SortableContext, arrayMove, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { MergeTrack } from "./MergeTrack";
+
+const MEDIA_EXTENSIONS = new Set([
+    "mp3", "mp4", "wav", "ogg", "flac", "m4a", "aac",
+    "opus", "wma", "webm", "mkv", "avi", "mov", "m4v",
+]);
+
+function getMediaPaths(files: FileList): string[] {
+    return Array.from(files)
+        .filter((f) => MEDIA_EXTENSIONS.has(f.name.split(".").pop()?.toLowerCase() ?? ""))
+        .map((f) => window.electronAPI.getPathForFile(f));
+}
 
 interface Track {
     id: string;
@@ -24,17 +36,28 @@ export function Merger() {
 
     const [tracks, setTracks] = useState<Track[]>([]);
     const [isMerging, setIsMerging] = useState(false);
+    const [isDragOver, setIsDragOver] = useState(false);
 
     const sensors = useSensors(useSensor(PointerSensor));
 
     async function handleAddFiles() {
         const paths = await window.electronAPI.selectMediaFiles();
         if (!paths.length) return;
-        const newTracks: Track[] = paths.map((path) => ({
-            id: crypto.randomUUID(),
-            path,
-        }));
-        setTracks((prev) => [...prev, ...newTracks]);
+        setTracks((prev) => [
+            ...prev,
+            ...paths.map((path) => ({ id: crypto.randomUUID(), path })),
+        ]);
+    }
+
+    function handleDrop(e: React.DragEvent) {
+        e.preventDefault();
+        setIsDragOver(false);
+        const paths = getMediaPaths(e.dataTransfer.files);
+        if (!paths.length) return;
+        setTracks((prev) => [
+            ...prev,
+            ...paths.map((path) => ({ id: crypto.randomUUID(), path })),
+        ]);
     }
 
     function handleRemove(id: string) {
@@ -77,17 +100,42 @@ export function Merger() {
 
     if (!tracks.length) {
         return (
-            <div className="flex flex-col items-center justify-center flex-1 h-full gap-3">
+            <div
+                className={cn(
+                    "flex flex-col items-center justify-center flex-1 h-full gap-3 rounded-lg border-2 border-dashed border-transparent transition-colors",
+                    isDragOver && "border-primary bg-primary/5",
+                )}
+                onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+                onDragLeave={() => setIsDragOver(false)}
+                onDrop={handleDrop}
+            >
                 <Button size="lg" onClick={handleAddFiles}>
                     {t("merger.addFiles")}
                 </Button>
                 <p className="text-sm text-muted-foreground">{t("merger.supportedFormats")}</p>
+                {isDragOver && (
+                    <p className="text-sm font-medium text-primary">{t("common.dropFiles")}</p>
+                )}
             </div>
         );
     }
 
     return (
-        <div className="flex flex-col h-full p-6 gap-6">
+        <div
+            className="relative flex flex-col h-full p-6 gap-6"
+            onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+            onDragLeave={(e) => {
+                if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsDragOver(false);
+            }}
+            onDrop={handleDrop}
+        >
+            {/* Drag overlay */}
+            {isDragOver && (
+                <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg border-2 border-dashed border-primary bg-background/80 pointer-events-none">
+                    <p className="text-lg font-medium text-primary">{t("common.dropFiles")}</p>
+                </div>
+            )}
+
             {/* Track list */}
             <div className="flex-1 overflow-auto flex flex-col gap-2">
                 <DndContext

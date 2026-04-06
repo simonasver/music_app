@@ -101,6 +101,8 @@
         "areYouSure": "Ar tikrai?",
         "confirm": "Patvirtinti",
         "cancel": "Atšaukti",
-        "save": "Išsaugoti"
+        "save": "Išsaugoti",
+        "dropFile": "Įtempkite failą čia",
+        "dropFiles": "Įtempkite failus čia"
     }
 }
