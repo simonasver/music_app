@@ -9,8 +9,20 @@ import { useToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
 const MEDIA_EXTENSIONS = new Set([
-    "mp3", "mp4", "wav", "ogg", "flac", "m4a", "aac",
-    "opus", "wma", "webm", "mkv", "avi", "mov", "m4v",
+    "mp3",
+    "mp4",
+    "wav",
+    "ogg",
+    "flac",
+    "m4a",
+    "aac",
+    "opus",
+    "wma",
+    "webm",
+    "mkv",
+    "avi",
+    "mov",
+    "m4v",
 ]);
 
 function getMediaPath(files: FileList): string | null {
@@ -178,7 +190,10 @@ export function Trimmer() {
                         "flex flex-col items-center justify-center flex-1 gap-3 rounded-lg border-2 border-dashed border-transparent transition-colors",
                         isDragOver && "border-primary bg-primary/5",
                     )}
-                    onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+                    onDragOver={(e) => {
+                        e.preventDefault();
+                        setIsDragOver(true);
+                    }}
                     onDragLeave={() => setIsDragOver(false)}
                     onDrop={handleDrop}
                 >

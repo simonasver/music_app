@@ -15,8 +15,20 @@ import { cn } from "@/lib/utils";
 import { MergeTrack } from "./MergeTrack";
 
 const MEDIA_EXTENSIONS = new Set([
-    "mp3", "mp4", "wav", "ogg", "flac", "m4a", "aac",
-    "opus", "wma", "webm", "mkv", "avi", "mov", "m4v",
+    "mp3",
+    "mp4",
+    "wav",
+    "ogg",
+    "flac",
+    "m4a",
+    "aac",
+    "opus",
+    "wma",
+    "webm",
+    "mkv",
+    "avi",
+    "mov",
+    "m4v",
 ]);
 
 function getMediaPaths(files: FileList): string[] {
@@ -43,10 +55,7 @@ export function Merger() {
     async function handleAddFiles() {
         const paths = await window.electronAPI.selectMediaFiles();
         if (!paths.length) return;
-        setTracks((prev) => [
-            ...prev,
-            ...paths.map((path) => ({ id: crypto.randomUUID(), path })),
-        ]);
+        setTracks((prev) => [...prev, ...paths.map((path) => ({ id: crypto.randomUUID(), path }))]);
     }
 
     function handleDrop(e: React.DragEvent) {
@@ -54,10 +63,7 @@ export function Merger() {
         setIsDragOver(false);
         const paths = getMediaPaths(e.dataTransfer.files);
         if (!paths.length) return;
-        setTracks((prev) => [
-            ...prev,
-            ...paths.map((path) => ({ id: crypto.randomUUID(), path })),
-        ]);
+        setTracks((prev) => [...prev, ...paths.map((path) => ({ id: crypto.randomUUID(), path }))]);
     }
 
     function handleRemove(id: string) {
@@ -105,7 +111,10 @@ export function Merger() {
                     "flex flex-col items-center justify-center flex-1 h-full gap-3 rounded-lg border-2 border-dashed border-transparent transition-colors",
                     isDragOver && "border-primary bg-primary/5",
                 )}
-                onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+                onDragOver={(e) => {
+                    e.preventDefault();
+                    setIsDragOver(true);
+                }}
                 onDragLeave={() => setIsDragOver(false)}
                 onDrop={handleDrop}
             >
@@ -123,7 +132,10 @@ export function Merger() {
     return (
         <div
             className="relative flex flex-col h-full p-6 gap-6"
-            onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+            onDragOver={(e) => {
+                e.preventDefault();
+                setIsDragOver(true);
+            }}
             onDragLeave={(e) => {
                 if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsDragOver(false);
             }}
