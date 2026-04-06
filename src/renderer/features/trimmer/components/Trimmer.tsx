@@ -248,9 +248,19 @@ export function Trimmer() {
                             />
                             {t("trimmer.replaceOriginal")}
                         </label>
-                        <Button size="lg" onClick={handleSave} disabled={!isLoaded || isTrimming}>
-                            {isTrimming ? t("trimmer.trimming") : t("trimmer.save")}
-                        </Button>
+                        <div className="flex items-center gap-3">
+                            <Button
+                                variant="outline"
+                                size="lg"
+                                onClick={handleReset}
+                                disabled={isTrimming}
+                            >
+                                {t("common.cancel")}
+                            </Button>
+                            <Button size="lg" onClick={handleSave} disabled={!isLoaded || isTrimming}>
+                                {isTrimming ? t("trimmer.trimming") : t("trimmer.save")}
+                            </Button>
+                        </div>
                     </div>
                 </>
             )}
