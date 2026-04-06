@@ -35,6 +35,7 @@ export function MergeTrack({ id, path, onRemove }: MergeTrackProps) {
         if (!waveContainerRef.current) return;
 
         wavesurferRef.current?.destroy();
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsLoaded(false);
         setIsPlaying(false);
 

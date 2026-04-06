@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import WaveSurfer from "wavesurfer.js";
-import RegionsPlugin, { type Region } from "wavesurfer.js/plugins/regions";
+import RegionsPlugin, { type Region } from "wavesurfer.js/dist/plugins/regions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -257,7 +257,11 @@ export function Trimmer() {
                             >
                                 {t("common.cancel")}
                             </Button>
-                            <Button size="lg" onClick={handleSave} disabled={!isLoaded || isTrimming}>
+                            <Button
+                                size="lg"
+                                onClick={handleSave}
+                                disabled={!isLoaded || isTrimming}
+                            >
                                 {isTrimming ? t("trimmer.trimming") : t("trimmer.save")}
                             </Button>
                         </div>
