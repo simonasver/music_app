@@ -89,9 +89,9 @@ function registerIpcHandlers() {
     ipcMain.handle("history:delete-all", () => deleteAllHistory());
     ipcMain.handle("shell:open-url", (_event, url: string) => shell.openExternal(url));
 
-    ipcMain.handle("dialog:select-media-file", async () => {
+    ipcMain.handle("dialog:select-media-file", async (_event, { multi }: { multi: boolean }) => {
         const result = await dialog.showOpenDialog({
-            properties: ["openFile"],
+            properties: multi ? ["openFile", "multiSelections"] : ["openFile"],
             filters: [
                 {
                     name: "Audio/Video",
@@ -114,40 +114,13 @@ function registerIpcHandlers() {
                 },
             ],
         });
-        return result.canceled ? null : result.filePaths[0];
+        if (result.canceled) return multi ? [] : null;
+        return multi ? result.filePaths : result.filePaths[0];
     });
 
     ipcMain.handle("trim:execute", (_event, params) => executeTrim(params));
 
     ipcMain.handle("merge:execute", (_event, params) => executeMerge(params));
-
-    ipcMain.handle("dialog:select-media-files", async () => {
-        const result = await dialog.showOpenDialog({
-            properties: ["openFile", "multiSelections"],
-            filters: [
-                {
-                    name: "Audio/Video",
-                    extensions: [
-                        "mp3",
-                        "mp4",
-                        "wav",
-                        "ogg",
-                        "flac",
-                        "m4a",
-                        "aac",
-                        "opus",
-                        "wma",
-                        "webm",
-                        "mkv",
-                        "avi",
-                        "mov",
-                        "m4v",
-                    ],
-                },
-            ],
-        });
-        return result.canceled ? [] : result.filePaths;
-    });
 
     ipcMain.handle("dialog:save-file", async () => {
         const result = await dialog.showSaveDialog({

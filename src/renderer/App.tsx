@@ -82,6 +82,7 @@ export function App() {
                 <TabsContent
                     value={AppTab.Merge}
                     className="flex-1 overflow-auto mt-0 data-[state=inactive]:hidden"
+                    forceMount
                 >
                     <Merger />
                 </TabsContent>

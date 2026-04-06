@@ -43,7 +43,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
     openExternal: (url: string): Promise<void> => ipcRenderer.invoke("shell:open-url", url),
 
-    selectMediaFile: (): Promise<string | null> => ipcRenderer.invoke("dialog:select-media-file"),
+    selectMediaFile: (): Promise<string | null> =>
+        ipcRenderer.invoke("dialog:select-media-file", { multi: false }),
 
     executeTrim: (params: {
         inputPath: string;
@@ -54,7 +55,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
     readFile: (filePath: string): Promise<Buffer> => ipcRenderer.invoke("file:read", filePath),
 
-    selectMediaFiles: (): Promise<string[]> => ipcRenderer.invoke("dialog:select-media-files"),
+    selectMediaFiles: (): Promise<string[]> =>
+        ipcRenderer.invoke("dialog:select-media-file", { multi: true }),
 
     executeMerge: (params: {
         inputPaths: string[];
