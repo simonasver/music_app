@@ -30,11 +30,16 @@ export function DownloadHistory({ entries, onRefresh }: Props) {
     return (
         <div className="flex-1 overflow-y-auto rounded-md border border-border bg-muted/30 min-h-0">
             <div className="p-2 flex flex-col gap-1">
-                {entries.map((entry) => (
+                {entries.map((entry, index) => (
                     <div
                         key={entry.id}
-                        className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-muted/50 min-w-0 w-full"
+                        className={`flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-muted/50 min-w-0 w-full ${
+                            index % 2 === 0 ? "bg-background" : ""
+                        }`}
                     >
+                        <span className="text-xs text-muted-foreground font-mono w-6 shrink-0 select-none text-right">
+                            {index + 1}.
+                        </span>
                         <span className="flex-1 truncate font-mono text-xs text-foreground min-w-0">
                             {entry.name ?? entry.url}
                         </span>
