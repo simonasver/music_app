@@ -72,10 +72,17 @@ export function App() {
                 >
                     <YoutubeDownloader settings={settings} />
                 </TabsContent>
-                <TabsContent value={AppTab.Trim} className="flex-1 overflow-auto mt-0">
+                <TabsContent
+                    value={AppTab.Trim}
+                    className="flex-1 overflow-auto mt-0 data-[state=inactive]:hidden"
+                    forceMount
+                >
                     <Trimmer />
                 </TabsContent>
-                <TabsContent value={AppTab.Merge} className="flex-1 overflow-auto mt-0">
+                <TabsContent
+                    value={AppTab.Merge}
+                    className="flex-1 overflow-auto mt-0 data-[state=inactive]:hidden"
+                >
                     <Merger />
                 </TabsContent>
                 <TabsContent value={AppTab.Settings} className="flex-1 overflow-auto mt-0">
