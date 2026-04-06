@@ -52,6 +52,10 @@ export function Merger() {
         }
     }
 
+    function handleReset() {
+        setTracks([]);
+    }
+
     async function handleMerge() {
         const outputPath = await window.electronAPI.saveFile();
         if (!outputPath) return;
@@ -63,7 +67,7 @@ export function Merger() {
                 outputPath,
             });
             showToast(t("merger.mergeComplete", { path: result.outputPath }));
-            setTracks([]);
+            handleReset();
         } catch {
             showToast(t("merger.mergeError"));
         } finally {
@@ -118,6 +122,14 @@ export function Merger() {
                             {t("merger.minFilesHint")}
                         </span>
                     )}
+                    <Button
+                        variant="outline"
+                        size="lg"
+                        onClick={handleReset}
+                        disabled={isMerging}
+                    >
+                        {t("common.cancel")}
+                    </Button>
                     <Button
                         size="lg"
                         onClick={handleMerge}
