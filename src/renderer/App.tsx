@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { YoutubeDownloader } from "@/features/youtubeDownloader/components/YoutubeDownloader";
 import { Settings } from "@/features/settings/components/Settings";
 import { ToastProvider } from "@/lib/toast";
 import type { AppSettings as AppSettingsType } from "./env.d";
+import i18n, { detectSystemLanguage } from "./i18n";
 
 enum AppTab {
     YoutubeDownloader = "YoutubeDownloader",
@@ -12,9 +14,17 @@ enum AppTab {
 
 export function App() {
     const [settings, setSettings] = useState<AppSettingsType | null>(null);
+    const { t } = useTranslation();
 
     useEffect(() => {
-        window.electronAPI.getSettings().then(setSettings);
+        window.electronAPI.getSettings().then((s) => {
+            const savedLang = s.general?.language ?? "system";
+            const resolvedLang = savedLang === "system" ? detectSystemLanguage() : savedLang;
+            if (resolvedLang !== i18n.language) {
+                i18n.changeLanguage(resolvedLang);
+            }
+            setSettings(s);
+        });
     }, []);
 
     if (!settings) return null;
@@ -30,13 +40,13 @@ export function App() {
                         value={AppTab.YoutubeDownloader}
                         className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-6 py-3"
                     >
-                        YouTube Downloader
+                        {t("tabs.youtubeDownloader")}
                     </TabsTrigger>
                     <TabsTrigger
                         value={AppTab.Settings}
                         className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-6 py-3"
                     >
-                        Settings
+                        {t("tabs.settings")}
                     </TabsTrigger>
                 </TabsList>
                 <TabsContent

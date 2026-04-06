@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,7 +13,6 @@ import { cn } from "@/lib/utils";
 import {
     defaultProgress,
     parseYtDlpLine,
-    stageLabel,
     type DownloadProgress,
     type DownloadStage,
 } from "../utils/parseYtDlpLine";
@@ -36,6 +36,7 @@ interface Props {
 }
 
 export function YoutubeDownloader({ settings }: Props) {
+    const { t } = useTranslation();
     const toast = useToast();
     const [url, setUrl] = useState("");
     const [isDownloading, setIsDownloading] = useState(false);
@@ -88,7 +89,7 @@ export function YoutubeDownloader({ settings }: Props) {
                     })
                     .then(loadHistory);
 
-                toast.show("Download complete");
+                toast.show(t("downloader.downloadComplete"));
             } else {
                 setProgress((prev) => ({ ...prev, stage: "error" }));
             }
@@ -98,7 +99,7 @@ export function YoutubeDownloader({ settings }: Props) {
             unsubOutput();
             unsubComplete();
         };
-    }, [toast]);
+    }, [toast, t]);
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -128,14 +129,18 @@ export function YoutubeDownloader({ settings }: Props) {
         setIsDownloading(false);
     }
 
+    function stageText(p: DownloadProgress): string {
+        return t(`downloader.stage.${p.stage}`, { processor: p.processor || "…" });
+    }
+
     return (
         <div className="flex flex-col h-full p-6 gap-4">
             <div className="flex flex-col gap-2">
-                <Label htmlFor="url-input">YouTube URL</Label>
+                <Label htmlFor="url-input">{t("downloader.urlLabel")}</Label>
                 <Input
                     id="url-input"
                     type="url"
-                    placeholder="Enter youtube url"
+                    placeholder={t("downloader.urlPlaceholder")}
                     value={url}
                     onChange={(e) => setUrl(e.target.value)}
                     disabled={isDownloading}
@@ -148,7 +153,7 @@ export function YoutubeDownloader({ settings }: Props) {
                     disabled={isDownloading || !url.trim()}
                     onClick={() => handleDownload(settings.youtubeDownloaderSettings.mp3Config)}
                 >
-                    Download MP3
+                    {t("downloader.downloadMp3")}
                 </Button>
                 <Button
                     size="lg"
@@ -156,11 +161,11 @@ export function YoutubeDownloader({ settings }: Props) {
                     disabled={isDownloading || !url.trim()}
                     onClick={() => handleDownload(settings.youtubeDownloaderSettings.mp4Config)}
                 >
-                    Download MP4
+                    {t("downloader.downloadMp4")}
                 </Button>
                 {isDownloading && (
                     <Button variant="destructive" onClick={handleCancel}>
-                        Cancel
+                        {t("downloader.cancel")}
                     </Button>
                 )}
             </div>
@@ -177,7 +182,7 @@ export function YoutubeDownloader({ settings }: Props) {
                                         stageBadgeClass[progress.stage],
                                     )}
                                 >
-                                    {stageLabel(progress)}
+                                    {stageText(progress)}
                                 </span>
                                 {progress.filename && (
                                     <span className="text-xs text-muted-foreground truncate min-w-0">
@@ -196,7 +201,11 @@ export function YoutubeDownloader({ settings }: Props) {
                                         </span>
                                     )}
                                     {progress.speed && <span>{progress.speed}</span>}
-                                    {progress.eta && <span>ETA {progress.eta}</span>}
+                                    {progress.eta && (
+                                        <span>
+                                            {t("downloader.eta")} {progress.eta}
+                                        </span>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -206,10 +215,10 @@ export function YoutubeDownloader({ settings }: Props) {
             <Tabs defaultValue={DownloadInfoTab.History} className="flex flex-col flex-1 min-h-0">
                 <TabsList className="self-start h-8">
                     <TabsTrigger value={DownloadInfoTab.History} className="text-xs px-3 py-1">
-                        History
+                        {t("downloader.historyTab")}
                     </TabsTrigger>
                     <TabsTrigger value={DownloadInfoTab.Output} className="text-xs px-3 py-1">
-                        Output
+                        {t("downloader.outputTab")}
                     </TabsTrigger>
                 </TabsList>
                 <TabsContent

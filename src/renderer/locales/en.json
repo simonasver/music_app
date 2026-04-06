@@ -1,0 +1,68 @@
+{
+    "tabs": {
+        "youtubeDownloader": "YouTube Downloader",
+        "settings": "Settings"
+    },
+    "settings": {
+        "tabs": {
+            "general": "General",
+            "youtubeDownloader": "YouTube Downloader"
+        },
+        "general": {
+            "language": "Language",
+            "languageSystem": "System default",
+            "languageEn": "English",
+            "languageLt": "Lithuanian"
+        },
+        "ytdl": {
+            "downloadLocation": "Download Location",
+            "change": "Change",
+            "mp3Flags": "MP3 Download Flags",
+            "mp3FlagsDesc": "Passed directly to yt-dlp for MP3 downloads",
+            "mp4Flags": "MP4 Download Flags",
+            "mp4FlagsDesc": "Passed directly to yt-dlp for MP4 downloads",
+            "resetToDefaults": "Reset to Defaults",
+            "resetConfirm": "Reset all settings to defaults?",
+            "reset": "Reset",
+            "settingsReset": "Settings reset to defaults",
+            "history": "History",
+            "deleteAllHistory": "Delete All History",
+            "deleteHistoryConfirm": "Delete all download history?",
+            "delete": "Delete",
+            "historyDeleted": "History deleted"
+        }
+    },
+    "downloader": {
+        "urlLabel": "YouTube URL",
+        "urlPlaceholder": "Enter youtube url",
+        "downloadMp3": "Download MP3",
+        "downloadMp4": "Download MP4",
+        "cancel": "Cancel",
+        "eta": "ETA",
+        "downloadComplete": "Download complete",
+        "historyTab": "History",
+        "outputTab": "Output",
+        "stage": {
+            "idle": "Ready",
+            "fetching": "Fetching info\u2026",
+            "downloading": "Downloading\u2026",
+            "processing": "Processing ({{processor}})",
+            "done": "Download complete",
+            "error": "Error"
+        }
+    },
+    "history": {
+        "empty": "No history yet.",
+        "copied": "Copied to clipboard",
+        "copy": "Copy",
+        "open": "Open",
+        "deleteConfirm": "Delete this entry?",
+        "delete": "Delete",
+        "entryDeleted": "Entry deleted"
+    },
+    "common": {
+        "areYouSure": "Are you sure?",
+        "confirm": "Confirm",
+        "cancel": "Cancel"
+    }
+}
