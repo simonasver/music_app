@@ -31,7 +31,9 @@
             "deleteAllHistory": "Delete All History",
             "deleteHistoryConfirm": "Delete all download history?",
             "delete": "Delete",
-            "historyDeleted": "History deleted"
+            "historyDeleted": "History deleted",
+            "mp3ConfigSaved": "MP3 config saved",
+            "mp4ConfigSaved": "MP4 config saved"
         }
     },
     "downloader": {
@@ -94,6 +96,7 @@
     "common": {
         "areYouSure": "Are you sure?",
         "confirm": "Confirm",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "save": "Save"
     }
 }

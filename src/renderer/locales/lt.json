@@ -31,7 +31,9 @@
             "deleteAllHistory": "Ištrinti visą istoriją",
             "deleteHistoryConfirm": "Ištrinti visą atsisiuntimų istoriją?",
             "delete": "Ištrinti",
-            "historyDeleted": "Istorija ištrinta"
+            "historyDeleted": "Istorija ištrinta",
+            "mp3ConfigSaved": "MP3 konfigūracija išsaugota",
+            "mp4ConfigSaved": "MP4 konfigūracija išsaugota"
         }
     },
     "downloader": {
@@ -94,6 +96,7 @@
     "common": {
         "areYouSure": "Ar tikrai?",
         "confirm": "Patvirtinti",
-        "cancel": "Atšaukti"
+        "cancel": "Atšaukti",
+        "save": "Išsaugoti"
     }
 }

@@ -29,14 +29,22 @@ export function YoutubeDownloaderSettings({ settings, onSave }: Props) {
         }
     }
 
-    async function handleMp3Blur() {
-        if (mp3Config === settings.mp3Config) return;
+    async function handleMp3Save() {
+        if (mp3Config === settings.mp3Config) {
+            return;
+        }
+
         onSave({ ...settings, mp3Config });
+        toast.show(t("settings.ytdl.mp3ConfigSaved"));
     }
 
-    async function handleMp4Blur() {
-        if (mp4Config === settings.mp4Config) return;
+    async function handleMp4Save() {
+        if (mp4Config === settings.mp4Config) {
+            return;
+        }
+
         onSave({ ...settings, mp4Config });
+        toast.show(t("settings.ytdl.mp4ConfigSaved"));
     }
 
     async function handleReset() {
@@ -81,8 +89,12 @@ export function YoutubeDownloaderSettings({ settings, onSave }: Props) {
                     className="font-mono text-sm resize-none"
                     value={mp3Config}
                     onChange={(e) => setMp3Config(e.target.value)}
-                    onBlur={handleMp3Blur}
                 />
+                <div>
+                    <Button disabled={mp3Config === settings.mp3Config} onClick={handleMp3Save}>
+                        {t("common.save")}
+                    </Button>
+                </div>
             </div>
 
             <Separator />
@@ -100,8 +112,12 @@ export function YoutubeDownloaderSettings({ settings, onSave }: Props) {
                     className="font-mono text-sm resize-none"
                     value={mp4Config}
                     onChange={(e) => setMp4Config(e.target.value)}
-                    onBlur={handleMp4Blur}
                 />
+                <div>
+                    <Button disabled={mp4Config === settings.mp4Config} onClick={handleMp4Save}>
+                        {t("common.save")}
+                    </Button>
+                </div>
             </div>
 
             <Separator />
