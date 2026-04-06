@@ -6,6 +6,7 @@ import { app } from "electron";
 export interface AppSettings {
     general: {
         language: string;
+        theme: "light" | "dark" | "system";
     };
     youtubeDownloaderSettings: {
         downloadFileLocation: string;
@@ -17,6 +18,7 @@ export interface AppSettings {
 export const DEFAULTS: AppSettings = {
     general: {
         language: "system",
+        theme: "system",
     },
     youtubeDownloaderSettings: {
         downloadFileLocation: path.join(os.homedir(), "Downloads"),

@@ -14,7 +14,11 @@
             "language": "Kalba",
             "languageSystem": "Sistemos numatytoji",
             "languageEn": "Anglų",
-            "languageLt": "Lietuvių"
+            "languageLt": "Lietuvių",
+            "theme": "Tema",
+            "themeSystem": "Sistemos numatytoji",
+            "themeLight": "Šviesi",
+            "themeDark": "Tamsi"
         },
         "ytdl": {
             "downloadLocation": "Atsisiuntimo vieta",

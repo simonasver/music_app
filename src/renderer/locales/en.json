@@ -14,7 +14,11 @@
             "language": "Language",
             "languageSystem": "System default",
             "languageEn": "English",
-            "languageLt": "Lithuanian"
+            "languageLt": "Lithuanian",
+            "theme": "Theme",
+            "themeSystem": "System default",
+            "themeLight": "Light",
+            "themeDark": "Dark"
         },
         "ytdl": {
             "downloadLocation": "Download Location",
