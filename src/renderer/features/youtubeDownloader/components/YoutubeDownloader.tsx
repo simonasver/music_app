@@ -43,6 +43,7 @@ export function YoutubeDownloader({ settings }: Props) {
     const [outputLines, setOutputLines] = useState<string[]>([]);
     const [history, setHistory] = useState<HistoryEntry[]>([]);
     const [progress, setProgress] = useState<DownloadProgress>(defaultProgress);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_errorLine, setErrorLine] = useState<string | null>(null);
     const bottomRef = useRef<HTMLDivElement>(null);
     const pendingUrlRef = useRef<string>("");

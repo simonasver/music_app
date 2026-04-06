@@ -122,12 +122,7 @@ export function Merger() {
                             {t("merger.minFilesHint")}
                         </span>
                     )}
-                    <Button
-                        variant="outline"
-                        size="lg"
-                        onClick={handleReset}
-                        disabled={isMerging}
-                    >
+                    <Button variant="outline" size="lg" onClick={handleReset} disabled={isMerging}>
                         {t("common.cancel")}
                     </Button>
                     <Button
