@@ -10,6 +10,7 @@ export interface HistoryEntry {
 export interface AppSettings {
     general: {
         language: string;
+        theme: "light" | "dark" | "system";
     };
     youtubeDownloaderSettings: {
         downloadFileLocation: string;

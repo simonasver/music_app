@@ -9,6 +9,25 @@ import { ToastProvider } from "@/lib/toast";
 import type { AppSettings as AppSettingsType } from "./env.d";
 import i18n, { detectSystemLanguage } from "./i18n";
 
+let systemThemeListener: ((e: MediaQueryListEvent) => void) | null = null;
+const systemThemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+function applyTheme(theme: string) {
+    if (systemThemeListener) {
+        systemThemeQuery.removeEventListener("change", systemThemeListener);
+        systemThemeListener = null;
+    }
+    if (theme === "dark") {
+        document.documentElement.classList.add("dark");
+    } else if (theme === "light") {
+        document.documentElement.classList.remove("dark");
+    } else {
+        document.documentElement.classList.toggle("dark", systemThemeQuery.matches);
+        systemThemeListener = (e) => document.documentElement.classList.toggle("dark", e.matches);
+        systemThemeQuery.addEventListener("change", systemThemeListener);
+    }
+}
+
 enum AppTab {
     YoutubeDownloader = "YoutubeDownloader",
     Trim = "Trim",
@@ -30,6 +49,11 @@ export function App() {
             setSettings(s);
         });
     }, []);
+
+    useEffect(() => {
+        if (!settings) return;
+        applyTheme(settings.general.theme ?? "system");
+    }, [settings, settings?.general.theme]);
 
     if (!settings) return null;
 
