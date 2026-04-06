@@ -86,7 +86,11 @@ export function App() {
                 >
                     <Merger />
                 </TabsContent>
-                <TabsContent value={AppTab.Settings} className="flex-1 overflow-auto mt-0">
+                <TabsContent
+                    value={AppTab.Settings}
+                    className="flex-1 overflow-auto mt-0 data-[state=inactive]:hidden"
+                    forceMount
+                >
                     <Settings settings={settings} onSave={setSettings} />
                 </TabsContent>
             </Tabs>
