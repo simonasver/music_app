@@ -5,6 +5,7 @@ import started from "electron-squirrel-startup";
 import { loadSettings, saveSettings, DEFAULTS } from "./settingsService";
 import { startDownload, cancelDownload } from "./downloadService";
 import { executeTrim } from "./trimService";
+import { executeMerge } from "./mergeService";
 import {
     appendHistoryEntry,
     getAllHistory,
@@ -117,6 +118,47 @@ function registerIpcHandlers() {
     });
 
     ipcMain.handle("trim:execute", (_event, params) => executeTrim(params));
+
+    ipcMain.handle("merge:execute", (_event, params) => executeMerge(params));
+
+    ipcMain.handle("dialog:select-media-files", async () => {
+        const result = await dialog.showOpenDialog({
+            properties: ["openFile", "multiSelections"],
+            filters: [
+                {
+                    name: "Audio/Video",
+                    extensions: [
+                        "mp3",
+                        "mp4",
+                        "wav",
+                        "ogg",
+                        "flac",
+                        "m4a",
+                        "aac",
+                        "opus",
+                        "wma",
+                        "webm",
+                        "mkv",
+                        "avi",
+                        "mov",
+                        "m4v",
+                    ],
+                },
+            ],
+        });
+        return result.canceled ? [] : result.filePaths;
+    });
+
+    ipcMain.handle("dialog:save-file", async () => {
+        const result = await dialog.showSaveDialog({
+            filters: [
+                { name: "MP3", extensions: ["mp3"] },
+                { name: "MP4", extensions: ["mp4"] },
+                { name: "WAV", extensions: ["wav"] },
+            ],
+        });
+        return result.canceled ? null : result.filePath;
+    });
 
     ipcMain.handle("file:read", (_event, filePath: string) => fs.readFileSync(filePath));
 }

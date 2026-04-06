@@ -42,6 +42,12 @@ declare global {
                 replaceOriginal: boolean;
             }): Promise<{ outputPath: string }>;
             readFile(filePath: string): Promise<Buffer>;
+            selectMediaFiles(): Promise<string[]>;
+            executeMerge(params: {
+                inputPaths: string[];
+                outputPath: string;
+            }): Promise<{ outputPath: string }>;
+            saveFile(): Promise<string | null>;
         };
     }
 }

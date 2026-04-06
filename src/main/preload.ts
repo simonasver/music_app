@@ -53,4 +53,13 @@ contextBridge.exposeInMainWorld("electronAPI", {
     }): Promise<{ outputPath: string }> => ipcRenderer.invoke("trim:execute", params),
 
     readFile: (filePath: string): Promise<Buffer> => ipcRenderer.invoke("file:read", filePath),
+
+    selectMediaFiles: (): Promise<string[]> => ipcRenderer.invoke("dialog:select-media-files"),
+
+    executeMerge: (params: {
+        inputPaths: string[];
+        outputPath: string;
+    }): Promise<{ outputPath: string }> => ipcRenderer.invoke("merge:execute", params),
+
+    saveFile: (): Promise<string | null> => ipcRenderer.invoke("dialog:save-file"),
 });
