@@ -4,6 +4,9 @@ import path from "node:path";
 import { app } from "electron";
 
 export interface AppSettings {
+    general: {
+        language: string;
+    };
     youtubeDownloaderSettings: {
         downloadFileLocation: string;
         mp3Config: string;
@@ -12,6 +15,9 @@ export interface AppSettings {
 }
 
 export const DEFAULTS: AppSettings = {
+    general: {
+        language: "system",
+    },
     youtubeDownloaderSettings: {
         downloadFileLocation: path.join(os.homedir(), "Downloads"),
         mp3Config:
@@ -27,7 +33,14 @@ function settingsFilePath(): string {
 export function loadSettings(): AppSettings {
     try {
         const raw = fs.readFileSync(settingsFilePath(), "utf-8");
-        return { ...DEFAULTS, ...JSON.parse(raw) };
+        const saved = JSON.parse(raw);
+        return {
+            general: { ...DEFAULTS.general, ...saved.general },
+            youtubeDownloaderSettings: {
+                ...DEFAULTS.youtubeDownloaderSettings,
+                ...saved.youtubeDownloaderSettings,
+            },
+        };
     } catch {
         return { ...DEFAULTS };
     }

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { AppSettings } from "../../../env";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export function YoutubeDownloaderSettings({ settings, onSave }: Props) {
+    const { t } = useTranslation();
     const toast = useToast();
     const [mp3Config, setMp3Config] = useState(settings.mp3Config);
     const [mp4Config, setMp4Config] = useState(settings.mp4Config);
@@ -43,14 +45,14 @@ export function YoutubeDownloaderSettings({ settings, onSave }: Props) {
         setMp3Config(defaultYtSettings.mp3Config);
         setMp4Config(defaultYtSettings.mp4Config);
         onSave(defaultYtSettings);
-        toast.show("Settings reset to defaults");
+        toast.show(t("settings.ytdl.settingsReset"));
     }
 
     return (
         <div className="h-full overflow-auto p-6 flex flex-col gap-6">
             <div className="flex flex-col gap-3">
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                    Download Location
+                    {t("settings.ytdl.downloadLocation")}
                 </h2>
                 <div className="flex items-center gap-3">
                     <Input
@@ -59,7 +61,7 @@ export function YoutubeDownloaderSettings({ settings, onSave }: Props) {
                         className="flex-1 bg-muted/30 cursor-default"
                     />
                     <Button variant="outline" onClick={handleSelectFolder}>
-                        Change
+                        {t("settings.ytdl.change")}
                     </Button>
                 </div>
             </div>
@@ -68,10 +70,10 @@ export function YoutubeDownloaderSettings({ settings, onSave }: Props) {
 
             <div className="flex flex-col gap-3">
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                    MP3 Download Flags
+                    {t("settings.ytdl.mp3Flags")}
                 </h2>
                 <Label htmlFor="mp3-flags" className="text-xs text-muted-foreground">
-                    Passed directly to yt-dlp for MP3 downloads
+                    {t("settings.ytdl.mp3FlagsDesc")}
                 </Label>
                 <Textarea
                     id="mp3-flags"
@@ -87,10 +89,10 @@ export function YoutubeDownloaderSettings({ settings, onSave }: Props) {
 
             <div className="flex flex-col gap-3">
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                    MP4 Download Flags
+                    {t("settings.ytdl.mp4Flags")}
                 </h2>
                 <Label htmlFor="mp4-flags" className="text-xs text-muted-foreground">
-                    Passed directly to yt-dlp for MP4 downloads
+                    {t("settings.ytdl.mp4FlagsDesc")}
                 </Label>
                 <Textarea
                     id="mp4-flags"
@@ -107,11 +109,11 @@ export function YoutubeDownloaderSettings({ settings, onSave }: Props) {
             <div>
                 <ConfirmButton
                     variant="outline"
-                    confirmText="Reset all settings to defaults?"
-                    confirmLabel="Reset"
+                    confirmText={t("settings.ytdl.resetConfirm")}
+                    confirmLabel={t("settings.ytdl.reset")}
                     onConfirm={handleReset}
                 >
-                    Reset to Defaults
+                    {t("settings.ytdl.resetToDefaults")}
                 </ConfirmButton>
             </div>
 
@@ -119,19 +121,19 @@ export function YoutubeDownloaderSettings({ settings, onSave }: Props) {
 
             <div className="flex flex-col gap-3">
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                    History
+                    {t("settings.ytdl.history")}
                 </h2>
                 <div>
                     <ConfirmButton
                         variant="destructive"
-                        confirmText="Delete all download history?"
-                        confirmLabel="Delete"
+                        confirmText={t("settings.ytdl.deleteHistoryConfirm")}
+                        confirmLabel={t("settings.ytdl.delete")}
                         onConfirm={async () => {
                             await window.electronAPI.deleteAllHistory();
-                            toast.show("History deleted");
+                            toast.show(t("settings.ytdl.historyDeleted"));
                         }}
                     >
-                        Delete All History
+                        {t("settings.ytdl.deleteAllHistory")}
                     </ConfirmButton>
                 </div>
             </div>

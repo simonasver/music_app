@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { useToast } from "@/lib/toast";
@@ -9,18 +10,19 @@ interface Props {
 }
 
 export function DownloadHistory({ entries, onRefresh }: Props) {
+    const { t } = useTranslation();
     const toast = useToast();
 
     async function handleDelete(id: string) {
         await window.electronAPI.deleteHistoryEntry(id);
         onRefresh();
-        toast.show("Entry deleted");
+        toast.show(t("history.entryDeleted"));
     }
 
     if (entries.length === 0) {
         return (
             <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm">
-                No history yet.
+                {t("history.empty")}
             </div>
         );
     }
@@ -46,10 +48,10 @@ export function DownloadHistory({ entries, onRefresh }: Props) {
                                 className="h-7 px-2 text-xs"
                                 onClick={() => {
                                     navigator.clipboard.writeText(entry.url);
-                                    toast.show("Copied to clipboard");
+                                    toast.show(t("history.copied"));
                                 }}
                             >
-                                Copy
+                                {t("history.copy")}
                             </Button>
                             <Button
                                 size="sm"
@@ -57,17 +59,17 @@ export function DownloadHistory({ entries, onRefresh }: Props) {
                                 className="h-7 px-2 text-xs"
                                 onClick={() => window.electronAPI.openExternal(entry.url)}
                             >
-                                Open
+                                {t("history.open")}
                             </Button>
                             <ConfirmButton
                                 size="sm"
                                 className="h-7 px-2 text-xs text-destructive hover:text-destructive"
                                 variant="ghost"
-                                confirmText="Delete this entry?"
-                                confirmLabel="Delete"
+                                confirmText={t("history.deleteConfirm")}
+                                confirmLabel={t("history.delete")}
                                 onConfirm={() => handleDelete(entry.id)}
                             >
-                                Delete
+                                {t("history.delete")}
                             </ConfirmButton>
                         </div>
                     </div>

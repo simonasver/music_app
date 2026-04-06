@@ -8,6 +8,9 @@ export interface HistoryEntry {
 }
 
 export interface AppSettings {
+    general: {
+        language: string;
+    };
     youtubeDownloaderSettings: {
         downloadFileLocation: string;
         mp3Config: string;

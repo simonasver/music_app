@@ -71,20 +71,3 @@ export function parseYtDlpLine(line: string, current: DownloadProgress): Downloa
 
     return current;
 }
-
-export function stageLabel(p: DownloadProgress): string {
-    switch (p.stage) {
-        case "idle":
-            return "Ready";
-        case "fetching":
-            return "Fetching info…";
-        case "downloading":
-            return "Downloading…";
-        case "processing":
-            return `Processing (${p.processor || "…"})`;
-        case "done":
-            return "Download complete";
-        case "error":
-            return "Error";
-    }
-}

@@ -1,0 +1,68 @@
+{
+    "tabs": {
+        "youtubeDownloader": "YouTube atsisiuntimas",
+        "settings": "Nustatymai"
+    },
+    "settings": {
+        "tabs": {
+            "general": "Bendrieji",
+            "youtubeDownloader": "YouTube atsisiuntimas"
+        },
+        "general": {
+            "language": "Kalba",
+            "languageSystem": "Sistemos numatytoji",
+            "languageEn": "Anglų",
+            "languageLt": "Lietuvių"
+        },
+        "ytdl": {
+            "downloadLocation": "Atsisiuntimo vieta",
+            "change": "Keisti",
+            "mp3Flags": "MP3 atsisiuntimo parametrai",
+            "mp3FlagsDesc": "Perduodama tiesiogiai yt-dlp MP3 atsisiuntimams",
+            "mp4Flags": "MP4 atsisiuntimo parametrai",
+            "mp4FlagsDesc": "Perduodama tiesiogiai yt-dlp MP4 atsisiuntimams",
+            "resetToDefaults": "Atkurti numatytąsias reikšmes",
+            "resetConfirm": "Atkurti visus nustatymus į numatytąsias reikšmes?",
+            "reset": "Atkurti",
+            "settingsReset": "Nustatymai atkurti į numatytąsias reikšmes",
+            "history": "Istorija",
+            "deleteAllHistory": "Ištrinti visą istoriją",
+            "deleteHistoryConfirm": "Ištrinti visą atsisiuntimų istoriją?",
+            "delete": "Ištrinti",
+            "historyDeleted": "Istorija ištrinta"
+        }
+    },
+    "downloader": {
+        "urlLabel": "YouTube URL",
+        "urlPlaceholder": "Įveskite youtube nuorodą",
+        "downloadMp3": "Atsisiųsti MP3",
+        "downloadMp4": "Atsisiųsti MP4",
+        "cancel": "Atšaukti",
+        "eta": "Likęs laikas",
+        "downloadComplete": "Atsisiuntimas baigtas",
+        "historyTab": "Istorija",
+        "outputTab": "Išvestis",
+        "stage": {
+            "idle": "Laukiama",
+            "fetching": "Gaunama informacija\u2026",
+            "downloading": "Atsisiunčiama\u2026",
+            "processing": "Apdorojama ({{processor}})",
+            "done": "Atsisiuntimas baigtas",
+            "error": "Klaida"
+        }
+    },
+    "history": {
+        "empty": "Istorija tuščia.",
+        "copied": "Nukopijuota į iškarpinę",
+        "copy": "Kopijuoti",
+        "open": "Atidaryti",
+        "deleteConfirm": "Ištrinti šį įrašą?",
+        "delete": "Ištrinti",
+        "entryDeleted": "Įrašas ištrintas"
+    },
+    "common": {
+        "areYouSure": "Ar tikrai?",
+        "confirm": "Patvirtinti",
+        "cancel": "Atšaukti"
+    }
+}

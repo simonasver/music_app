@@ -1,8 +1,11 @@
-import type { AppSettings as AppSettingsType } from "../../../env";
+import { useTranslation } from "react-i18next";
+import type { AppSettings as AppSettingsType } from "../../../env.d";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
+import { GeneralSettings } from "./GeneralSettings";
 import { YoutubeDownloaderSettings } from "./YoutubeDownloaderSettings";
 
 enum SettingsTab {
+    General = "General",
     YoutubeDownloader = "YoutubeDownloader",
 }
 
@@ -12,6 +15,14 @@ interface Props {
 }
 
 export function Settings({ settings, onSave }: Props) {
+    const { t } = useTranslation();
+
+    async function handleGeneralSave(general: AppSettingsType["general"]) {
+        const updated = { ...settings, general };
+        await window.electronAPI.saveSettings(updated);
+        onSave(updated);
+    }
+
     async function handleYoutubeDownloaderSave(
         ytSettings: AppSettingsType["youtubeDownloaderSettings"],
     ) {
@@ -22,17 +33,26 @@ export function Settings({ settings, onSave }: Props) {
 
     return (
         <Tabs
-            defaultValue={SettingsTab.YoutubeDownloader}
+            defaultValue={SettingsTab.General}
             className="flex flex-col h-full bg-background text-foreground"
         >
             <TabsList className="shrink-0 w-full rounded-none border-b border-border h-auto p-1 gap-1 bg-muted/40">
                 <TabsTrigger
+                    value={SettingsTab.General}
+                    className="flex-1 rounded text-xs font-medium px-3 py-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm text-muted-foreground"
+                >
+                    {t("settings.tabs.general")}
+                </TabsTrigger>
+                <TabsTrigger
                     value={SettingsTab.YoutubeDownloader}
                     className="flex-1 rounded text-xs font-medium px-3 py-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm text-muted-foreground"
                 >
-                    YouTube Downloader
+                    {t("settings.tabs.youtubeDownloader")}
                 </TabsTrigger>
             </TabsList>
+            <TabsContent value={SettingsTab.General} className="flex-1 overflow-hidden mt-0">
+                <GeneralSettings settings={settings.general} onSave={handleGeneralSave} />
+            </TabsContent>
             <TabsContent
                 value={SettingsTab.YoutubeDownloader}
                 className="flex-1 overflow-hidden mt-0"
