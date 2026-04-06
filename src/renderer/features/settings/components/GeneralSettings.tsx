@@ -18,9 +18,11 @@ export function GeneralSettings({ settings, onSave }: Props) {
     }
 
     return (
-        <div className="p-4 space-y-6">
-            <div className="space-y-2">
-                <label className="text-sm font-medium">{t("settings.general.language")}</label>
+        <div className="h-full overflow-auto p-6 flex flex-col gap-6">
+            <div className="flex flex-col gap-3">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                    {t("settings.general.language")}
+                </h2>
                 <select
                     value={settings.language}
                     onChange={handleLanguageChange}
