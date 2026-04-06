@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { useToast } from "@/lib/toast";
-import type { HistoryEntry } from "../../env";
+import type { HistoryEntry } from "../../../env";
 
 interface Props {
     entries: HistoryEntry[];
@@ -34,7 +34,7 @@ export function DownloadHistory({ entries, onRefresh }: Props) {
                         className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-muted/50 min-w-0 w-full"
                     >
                         <span className="flex-1 truncate font-mono text-xs text-foreground min-w-0">
-                            {entry.url}
+                            {entry.name ?? entry.url}
                         </span>
                         <span className="text-xs text-muted-foreground whitespace-nowrap shrink-0">
                             {new Date(entry.date).toLocaleString()}

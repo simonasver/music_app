@@ -6,6 +6,7 @@ export interface HistoryEntry {
     id: string;
     url: string;
     date: string;
+    name?: string;
 }
 
 function historyFilePath(): string {

@@ -54,7 +54,22 @@ export function startDownload(
     const dir = toolsDir();
     const ytDlpPath = path.join(dir, "yt-dlp.exe");
     const flags = parseFlags(flagsString);
-    const args = [...flags, "-o", path.join(outputDir, "%(title)s.%(ext)s"), url];
+
+    const PROGRESS_FLAGS = [
+        "--newline",
+        "--progress-template",
+        'download:{"type":"progress","status":"%(progress.status)s","pct":"%(progress._percent_str)s","speed":"%(progress._speed_str)s","eta":"%(progress._eta_str)s","total":"%(progress._total_bytes_str)s","fragIdx":"%(progress.fragment_index)s","fragCount":"%(progress.fragment_count)s"}',
+        "--progress-template",
+        'postprocess:{"type":"postprocess","status":"%(progress.status)s","processor":"%(progress.postprocessor)s"}',
+    ];
+
+    const args = [
+        ...PROGRESS_FLAGS,
+        ...flags,
+        "-o",
+        path.join(outputDir, "%(title)s.%(ext)s"),
+        url,
+    ];
 
     activeProcess = spawn(ytDlpPath, args, {
         env: { ...process.env, PATH: dir + ";" + process.env.PATH },
@@ -62,13 +77,13 @@ export function startDownload(
     });
 
     activeProcess.stdout?.on("data", (data: Buffer) => {
-        for (const line of data.toString().split(/\r?\n/)) {
+        for (const line of data.toString().split(/\r?\n|\r/)) {
             if (line.trim()) onData(line);
         }
     });
 
     activeProcess.stderr?.on("data", (data: Buffer) => {
-        for (const line of data.toString().split(/\r?\n/)) {
+        for (const line of data.toString().split(/\r?\n|\r/)) {
             if (line.trim()) onData(line);
         }
     });

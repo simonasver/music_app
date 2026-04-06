@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { AppSettings } from "../../env";
+import type { AppSettings } from "../../../env";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ConfirmButton } from "@/components/ConfirmButton";

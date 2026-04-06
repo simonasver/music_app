@@ -1,4 +1,4 @@
-import type { AppSettings as AppSettingsType } from "../../env";
+import type { AppSettings as AppSettingsType } from "../../../env";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import { YoutubeDownloaderSettings } from "./YoutubeDownloaderSettings";
 
