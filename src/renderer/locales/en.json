@@ -1,6 +1,7 @@
 {
     "tabs": {
         "youtubeDownloader": "YouTube Downloader",
+        "trim": "Trim",
         "settings": "Settings"
     },
     "settings": {
@@ -59,6 +60,22 @@
         "deleteConfirm": "Delete this entry?",
         "delete": "Delete",
         "entryDeleted": "Entry deleted"
+    },
+    "trimmer": {
+        "selectFile": "Select File",
+        "supportedFormats": "Supported formats: MP3, MP4, WAV, OGG, FLAC, M4A, and more",
+        "changeFile": "Change File",
+        "startSeconds": "Start (s)",
+        "endSeconds": "End (s)",
+        "totalDuration": "Total",
+        "selectionDuration": "Selection",
+        "play": "Play",
+        "pause": "Pause",
+        "replaceOriginal": "Replace original file",
+        "save": "Save",
+        "trimming": "Trimming\u2026",
+        "trimComplete": "Saved to {{path}}",
+        "trimError": "Trim failed"
     },
     "common": {
         "areYouSure": "Are you sure?",

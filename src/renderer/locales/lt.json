@@ -1,6 +1,7 @@
 {
     "tabs": {
         "youtubeDownloader": "YouTube atsisiuntimas",
+        "trim": "Apkarpymas",
         "settings": "Nustatymai"
     },
     "settings": {
@@ -59,6 +60,22 @@
         "deleteConfirm": "Ištrinti šį įrašą?",
         "delete": "Ištrinti",
         "entryDeleted": "Įrašas ištrintas"
+    },
+    "trimmer": {
+        "selectFile": "Pasirinkti failą",
+        "supportedFormats": "Palaikomi formatai: MP3, MP4, WAV, OGG, FLAC, M4A ir kt.",
+        "changeFile": "Keisti failą",
+        "startSeconds": "Pradžia (s)",
+        "endSeconds": "Pabaiga (s)",
+        "totalDuration": "Viso",
+        "selectionDuration": "Pasirinkta",
+        "play": "Groti",
+        "pause": "Pristabdyti",
+        "replaceOriginal": "Pakeisti originalų failą",
+        "save": "Išsaugoti",
+        "trimming": "Apkarpoma\u2026",
+        "trimComplete": "Išsaugota į {{path}}",
+        "trimError": "Apkarpyti nepavyko"
     },
     "common": {
         "areYouSure": "Ar tikrai?",

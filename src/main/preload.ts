@@ -42,4 +42,15 @@ contextBridge.exposeInMainWorld("electronAPI", {
     deleteAllHistory: (): Promise<void> => ipcRenderer.invoke("history:delete-all"),
 
     openExternal: (url: string): Promise<void> => ipcRenderer.invoke("shell:open-url", url),
+
+    selectMediaFile: (): Promise<string | null> => ipcRenderer.invoke("dialog:select-media-file"),
+
+    executeTrim: (params: {
+        inputPath: string;
+        start: number;
+        end: number;
+        replaceOriginal: boolean;
+    }): Promise<{ outputPath: string }> => ipcRenderer.invoke("trim:execute", params),
+
+    readFile: (filePath: string): Promise<Buffer> => ipcRenderer.invoke("file:read", filePath),
 });
