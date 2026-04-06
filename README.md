@@ -1,22 +1,35 @@
 # Music App
 
-A cross-platform desktop music application built with Electron, React, and TypeScript.
+A Windows desktop application for downloading, trimming, and merging audio/video files.
+
+## Features
+
+- **YouTube Downloader** — download audio (MP3) or video (MP4) from YouTube URLs using yt-dlp, with real-time progress tracking and download history
+- **Trimmer** — trim audio/video files to a specific time range using ffmpeg
+- **Merger** — merge multiple audio/video files into one using ffmpeg
+- **Settings** — configure download output folder, yt-dlp flags for MP3/MP4, UI theme (light/dark/system), and language (English/Lithuanian)
+
+> **Windows only.** Bundled `yt-dlp.exe` and `ffmpeg.exe` executables are Windows binaries — macOS and Linux are not supported.
 
 ## Tech Stack
 
-- **[Electron](https://www.electronjs.org/)** — cross-platform desktop runtime
+- **[Electron](https://www.electronjs.org/)** — desktop runtime
 - **[React 19](https://react.dev/)** — UI framework
 - **[TypeScript](https://www.typescriptlang.org/)** — type-safe JavaScript
-- **[Vite](https://vitejs.dev/)** — fast bundler and dev server (via electron-forge plugin)
+- **[Vite](https://vitejs.dev/)** — bundler and dev server (via electron-forge plugin)
 - **[Electron Forge](https://www.electronforge.io/)** — build, package, and publish toolchain
 - **[Tailwind CSS v4](https://tailwindcss.com/)** — utility-first CSS framework (via PostCSS)
-- **[shadcn/ui](https://ui.shadcn.com/)** — copy-paste component library built on Radix UI
+- **[shadcn/ui](https://ui.shadcn.com/)** — component library built on Radix UI
+- **[i18next](https://www.i18next.com/)** — internationalization (English, Lithuanian)
+- **[yt-dlp](https://github.com/yt-dlp/yt-dlp)** — YouTube downloader (bundled Windows binary)
+- **[ffmpeg](https://ffmpeg.org/)** — audio/video processing (bundled Windows binary)
 - **[ESLint](https://eslint.org/)** + **[Prettier](https://prettier.io/)** — linting and formatting
 
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) v18+
 - npm v9+
+- Windows
 
 ## Getting Started
 
@@ -62,13 +75,13 @@ npm run format
 
 > Lint and format checks run automatically before every build and will abort if they fail.
 
-Package the app (compiles to `out/` without creating installers):
+Package the app (compiles to `out/` without creating an installer):
 
 ```bash
 npm run package
 ```
 
-Create platform-specific installers (also runs `package` internally):
+Create a Windows installer (also runs `package` internally):
 
 ```bash
 npm run make
@@ -79,16 +92,6 @@ Output is written to `out/`.
 | Platform | Output |
 |----------|--------|
 | Windows  | Squirrel installer (`.exe`) |
-| macOS    | ZIP archive |
-| Linux    | `.rpm` and `.deb` packages |
-
-## Publishing
-
-```bash
-npm run publish
-```
-
-Configure your publish target in [forge.config.ts](forge.config.ts) before running this command.
 
 ## Design System
 
@@ -108,35 +111,40 @@ npx shadcn@latest add <component>
 
 Components are placed in `src/renderer/components/ui/` and imported as `@/components/ui/<component>`.
 
-Example:
-
-```bash
-npx shadcn@latest add button
-```
-
-```tsx
-import { Button } from "@/components/ui/button";
-
-<Button variant="default">Click me</Button>
-```
-
-Available variants: `default`, `secondary`, `destructive`, `outline`, `ghost`, `link`.
-
 ## Project Structure
 
 ```
+resources/
+└── tools/
+    ├── ffmpeg.exe           # Bundled ffmpeg binary (Windows)
+    └── yt-dlp.exe           # Bundled yt-dlp binary (Windows)
 src/
 ├── main/
-│   ├── main.ts              # Electron main process
-│   └── preload.ts           # Preload script (context bridge)
+│   ├── main.ts              # Electron main process + IPC handlers
+│   ├── preload.ts           # Preload script (context bridge)
+│   ├── downloadService.ts   # yt-dlp download logic
+│   ├── trimService.ts       # ffmpeg trim logic
+│   ├── mergeService.ts      # ffmpeg merge logic
+│   ├── historyService.ts    # Download history persistence
+│   └── settingsService.ts   # App settings persistence
 └── renderer/
     ├── renderer.tsx         # React entry point
     ├── index.css            # Tailwind entry + @theme token mappings
+    ├── i18n.ts              # i18next setup and language detection
     ├── config/
     │   ├── design.ts        # Global design tokens (colors, radius, fonts)
     │   └── apply-design.ts  # Applies tokens as CSS variables at startup
     ├── components/
     │   └── ui/              # shadcn components (added via CLI)
-    └── lib/
-        └── utils.ts         # cn() helper (clsx + tailwind-merge)
+    ├── features/
+    │   ├── youtubeDownloader/  # YouTube download tab
+    │   ├── trimmer/            # Trim tab
+    │   ├── merger/             # Merge tab
+    │   └── settings/           # Settings tab
+    ├── lib/
+    │   ├── utils.ts         # cn() helper (clsx + tailwind-merge)
+    │   └── toast.tsx        # Toast notification context
+    └── locales/
+        ├── en.json          # English translations
+        └── lt.json          # Lithuanian translations
 ```
