@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { YoutubeDownloader } from "@/features/youtubeDownloader/YoutubeDownloader";
-import { Settings } from "@/features/settings/Settings";
+import { YoutubeDownloader } from "@/features/youtubeDownloader/components/YoutubeDownloader";
+import { Settings } from "@/features/settings/components/Settings";
 import { ToastProvider } from "@/lib/toast";
 import type { AppSettings as AppSettingsType } from "./env.d";
 
@@ -41,7 +41,8 @@ export function App() {
                 </TabsList>
                 <TabsContent
                     value={AppTab.YoutubeDownloader}
-                    className="flex-1 overflow-hidden mt-0"
+                    className="flex-1 overflow-hidden mt-0 data-[state=inactive]:hidden"
+                    forceMount
                 >
                     <YoutubeDownloader settings={settings} />
                 </TabsContent>
