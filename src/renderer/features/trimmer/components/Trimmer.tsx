@@ -8,11 +8,23 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
+const MEDIA_EXTENSIONS = new Set([
+    "mp3", "mp4", "wav", "ogg", "flac", "m4a", "aac",
+    "opus", "wma", "webm", "mkv", "avi", "mov", "m4v",
+]);
+
+function getMediaPath(files: FileList): string | null {
+    const file = files[0];
+    const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
+    return MEDIA_EXTENSIONS.has(ext) ? window.electronAPI.getPathForFile(file) : null;
+}
+
 export function Trimmer() {
     const { t } = useTranslation();
     const { show: showToast } = useToast();
 
     const [filePath, setFilePath] = useState<string | null>(null);
+    const [isDragOver, setIsDragOver] = useState(false);
     const [duration, setDuration] = useState(0);
     const [trimStart, setTrimStart] = useState(0);
     const [trimEnd, setTrimEnd] = useState(0);
@@ -107,6 +119,13 @@ export function Trimmer() {
         setFilePath(selected);
     }
 
+    function handleDrop(e: React.DragEvent) {
+        e.preventDefault();
+        setIsDragOver(false);
+        const path = getMediaPath(e.dataTransfer.files);
+        if (path) setFilePath(path);
+    }
+
     function handleReset() {
         regionRef.current = null;
         setFilePath(null);
@@ -154,11 +173,22 @@ export function Trimmer() {
     return (
         <div className="flex flex-col h-full p-6 gap-6">
             {!filePath ? (
-                <div className="flex flex-col items-center justify-center flex-1 gap-3">
+                <div
+                    className={cn(
+                        "flex flex-col items-center justify-center flex-1 gap-3 rounded-lg border-2 border-dashed border-transparent transition-colors",
+                        isDragOver && "border-primary bg-primary/5",
+                    )}
+                    onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+                    onDragLeave={() => setIsDragOver(false)}
+                    onDrop={handleDrop}
+                >
                     <Button size="lg" onClick={handleSelectFile}>
                         {t("trimmer.selectFile")}
                     </Button>
                     <p className="text-sm text-muted-foreground">{t("trimmer.supportedFormats")}</p>
+                    {isDragOver && (
+                        <p className="text-sm font-medium text-primary">{t("common.dropFile")}</p>
+                    )}
                 </div>
             ) : (
                 <>

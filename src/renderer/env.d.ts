@@ -49,6 +49,7 @@ declare global {
                 outputPath: string;
             }): Promise<{ outputPath: string }>;
             saveFile(): Promise<string | null>;
+            getPathForFile(file: File): string;
         };
     }
 }

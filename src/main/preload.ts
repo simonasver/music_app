@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from "electron";
+import { contextBridge, ipcRenderer, webUtils } from "electron";
 import type { AppSettings } from "./settingsService";
 import type { HistoryEntry } from "./historyService";
 
@@ -64,4 +64,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
     }): Promise<{ outputPath: string }> => ipcRenderer.invoke("merge:execute", params),
 
     saveFile: (): Promise<string | null> => ipcRenderer.invoke("dialog:save-file"),
+
+    getPathForFile: (file: File): string => webUtils.getPathForFile(file),
 });
