@@ -1,8 +1,10 @@
 import { app, BrowserWindow, ipcMain, dialog, shell } from "electron";
+import fs from "node:fs";
 import path from "node:path";
 import started from "electron-squirrel-startup";
 import { loadSettings, saveSettings, DEFAULTS } from "./settingsService";
 import { startDownload, cancelDownload } from "./downloadService";
+import { executeTrim } from "./trimService";
 import {
     appendHistoryEntry,
     getAllHistory,
@@ -85,4 +87,36 @@ function registerIpcHandlers() {
     ipcMain.handle("history:delete-entry", (_event, id: string) => deleteHistoryEntry(id));
     ipcMain.handle("history:delete-all", () => deleteAllHistory());
     ipcMain.handle("shell:open-url", (_event, url: string) => shell.openExternal(url));
+
+    ipcMain.handle("dialog:select-media-file", async () => {
+        const result = await dialog.showOpenDialog({
+            properties: ["openFile"],
+            filters: [
+                {
+                    name: "Audio/Video",
+                    extensions: [
+                        "mp3",
+                        "mp4",
+                        "wav",
+                        "ogg",
+                        "flac",
+                        "m4a",
+                        "aac",
+                        "opus",
+                        "wma",
+                        "webm",
+                        "mkv",
+                        "avi",
+                        "mov",
+                        "m4v",
+                    ],
+                },
+            ],
+        });
+        return result.canceled ? null : result.filePaths[0];
+    });
+
+    ipcMain.handle("trim:execute", (_event, params) => executeTrim(params));
+
+    ipcMain.handle("file:read", (_event, filePath: string) => fs.readFileSync(filePath));
 }

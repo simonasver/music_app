@@ -34,6 +34,14 @@ declare global {
             deleteHistoryEntry(id: string): Promise<void>;
             deleteAllHistory(): Promise<void>;
             openExternal(url: string): Promise<void>;
+            selectMediaFile(): Promise<string | null>;
+            executeTrim(params: {
+                inputPath: string;
+                start: number;
+                end: number;
+                replaceOriginal: boolean;
+            }): Promise<{ outputPath: string }>;
+            readFile(filePath: string): Promise<Buffer>;
         };
     }
 }
