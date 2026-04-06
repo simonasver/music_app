@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { YoutubeDownloader } from "@/features/youtubeDownloader/components/YoutubeDownloader";
 import { Settings } from "@/features/settings/components/Settings";
 import { Trimmer } from "@/features/trimmer/components/Trimmer";
+import { Merger } from "@/features/merger/components/Merger";
 import { ToastProvider } from "@/lib/toast";
 import type { AppSettings as AppSettingsType } from "./env.d";
 import i18n, { detectSystemLanguage } from "./i18n";
@@ -11,6 +12,7 @@ import i18n, { detectSystemLanguage } from "./i18n";
 enum AppTab {
     YoutubeDownloader = "YoutubeDownloader",
     Trim = "Trim",
+    Merge = "Merge",
     Settings = "Settings",
 }
 
@@ -51,6 +53,12 @@ export function App() {
                         {t("tabs.trim")}
                     </TabsTrigger>
                     <TabsTrigger
+                        value={AppTab.Merge}
+                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-6 py-3"
+                    >
+                        {t("tabs.merge")}
+                    </TabsTrigger>
+                    <TabsTrigger
                         value={AppTab.Settings}
                         className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-6 py-3"
                     >
@@ -66,6 +74,9 @@ export function App() {
                 </TabsContent>
                 <TabsContent value={AppTab.Trim} className="flex-1 overflow-auto mt-0">
                     <Trimmer />
+                </TabsContent>
+                <TabsContent value={AppTab.Merge} className="flex-1 overflow-auto mt-0">
+                    <Merger />
                 </TabsContent>
                 <TabsContent value={AppTab.Settings} className="flex-1 overflow-auto mt-0">
                     <Settings settings={settings} onSave={setSettings} />

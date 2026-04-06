@@ -2,6 +2,7 @@
     "tabs": {
         "youtubeDownloader": "YouTube Downloader",
         "trim": "Trim",
+        "merge": "Merge",
         "settings": "Settings"
     },
     "settings": {
@@ -76,6 +77,19 @@
         "trimming": "Trimming\u2026",
         "trimComplete": "Saved to {{path}}",
         "trimError": "Trim failed"
+    },
+    "merger": {
+        "addFiles": "Add Files",
+        "addMore": "Add More",
+        "supportedFormats": "Supported formats: MP3, MP4, WAV, OGG, FLAC, and more",
+        "mergeAndSave": "Merge & Save",
+        "merging": "Merging\u2026",
+        "mergeComplete": "Saved to {{path}}",
+        "mergeError": "Merge failed",
+        "minFilesHint": "Add at least 2 files to merge",
+        "play": "Play",
+        "pause": "Pause",
+        "totalDuration": "Total"
     },
     "common": {
         "areYouSure": "Are you sure?",

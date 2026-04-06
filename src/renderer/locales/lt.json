@@ -2,6 +2,7 @@
     "tabs": {
         "youtubeDownloader": "YouTube atsisiuntimas",
         "trim": "Apkarpymas",
+        "merge": "Sujungimas",
         "settings": "Nustatymai"
     },
     "settings": {
@@ -76,6 +77,19 @@
         "trimming": "Apkarpoma\u2026",
         "trimComplete": "Išsaugota į {{path}}",
         "trimError": "Apkarpyti nepavyko"
+    },
+    "merger": {
+        "addFiles": "Pridėti failus",
+        "addMore": "Pridėti daugiau",
+        "supportedFormats": "Palaikomi formatai: MP3, MP4, WAV, OGG, FLAC ir kt.",
+        "mergeAndSave": "Sujungti ir išsaugoti",
+        "merging": "Sujungiama\u2026",
+        "mergeComplete": "Išsaugota į {{path}}",
+        "mergeError": "Sujungti nepavyko",
+        "minFilesHint": "Pridėkite bent 2 failus sujungimui",
+        "play": "Groti",
+        "pause": "Pristabdyti",
+        "totalDuration": "Viso"
     },
     "common": {
         "areYouSure": "Ar tikrai?",
