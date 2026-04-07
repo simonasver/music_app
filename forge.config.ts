@@ -1,5 +1,6 @@
 import type { ForgeConfig } from "@electron-forge/shared-types";
 import { MakerSquirrel } from "@electron-forge/maker-squirrel";
+import { PublisherGithub } from "@electron-forge/publisher-github";
 import { VitePlugin } from "@electron-forge/plugin-vite";
 import { FusesPlugin } from "@electron-forge/plugin-fuses";
 import { FuseV1Options, FuseVersion } from "@electron/fuses";
@@ -14,6 +15,16 @@ const config: ForgeConfig = {
     makers: [
         new MakerSquirrel({
             setupIcon: "assets/icon.ico",
+        }),
+    ],
+    publishers: [
+        new PublisherGithub({
+            repository: {
+                owner: "simonasver",
+                name: "music_app",
+            },
+            prerelease: false,
+            draft: true,
         }),
     ],
     plugins: [
