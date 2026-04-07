@@ -2,7 +2,7 @@ import { app, BrowserWindow, ipcMain, dialog, shell, Menu } from "electron";
 import fs from "node:fs";
 import path from "node:path";
 import started from "electron-squirrel-startup";
-import { loadSettings, saveSettings, DEFAULTS } from "./settingsService";
+import { loadSettings, saveSettings, getDefaults } from "./settingsService";
 import { startDownload, cancelDownload } from "./downloadService";
 import { executeTrim } from "./trimService";
 import { executeMerge } from "./mergeService";
@@ -18,16 +18,58 @@ if (started) {
     app.quit();
 }
 
+interface WindowState {
+    width: number;
+    height: number;
+    x?: number;
+    y?: number;
+    isMaximized?: boolean;
+    isFullScreen?: boolean;
+}
+
+function windowStatePath(): string {
+    return path.join(app.getPath("userData"), "window-state.json");
+}
+
+function loadWindowState(): WindowState {
+    try {
+        return JSON.parse(fs.readFileSync(windowStatePath(), "utf-8"));
+    } catch {
+        return { width: 1200, height: 800 };
+    }
+}
+
+function saveWindowState(win: BrowserWindow): void {
+    const isMaximized = win.isMaximized();
+    const isFullScreen = win.isFullScreen();
+    // Only update bounds when in normal state so we remember the restored size
+    const bounds = isMaximized || isFullScreen ? loadWindowState() : win.getBounds();
+    fs.writeFileSync(
+        windowStatePath(),
+        JSON.stringify({ ...bounds, isMaximized, isFullScreen }),
+        "utf-8",
+    );
+}
+
 const createWindow = () => {
+    const { isMaximized, isFullScreen, ...windowBounds } = loadWindowState();
     const mainWindow = new BrowserWindow({
-        width: 1200,
-        height: 800,
-        center: true,
+        ...windowBounds,
+        center: windowBounds.x === undefined,
         autoHideMenuBar: true,
+        icon: app.isPackaged
+            ? path.join(process.resourcesPath, "icon.ico")
+            : path.join(__dirname, "../../assets/icon.ico"),
         webPreferences: {
             preload: path.join(__dirname, "preload.js"),
         },
     });
+
+    if (isFullScreen) {
+        mainWindow.setFullScreen(true);
+    } else if (isMaximized) {
+        mainWindow.maximize();
+    }
 
     if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
         mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
@@ -59,6 +101,8 @@ const createWindow = () => {
 
         Menu.buildFromTemplate(menuItems).popup({ window: mainWindow });
     });
+
+    mainWindow.on("close", () => saveWindowState(mainWindow));
 
     if (!app.isPackaged) {
         mainWindow.webContents.openDevTools();
@@ -99,7 +143,7 @@ function registerIpcHandlers() {
 
     ipcMain.on("download:cancel", () => cancelDownload());
 
-    ipcMain.handle("settings:get-defaults", () => DEFAULTS);
+    ipcMain.handle("settings:get-defaults", () => getDefaults());
 
     ipcMain.handle("dialog:select-folder", async () => {
         const result = await dialog.showOpenDialog({ properties: ["openDirectory"] });
