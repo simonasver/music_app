@@ -29,7 +29,7 @@ export const DEFAULTS: AppSettings = {
 };
 
 function settingsFilePath(): string {
-    return path.join(app.getPath("appData"), "music_app", "settings.json");
+    return path.join(app.getPath("userData"), "settings.json");
 }
 
 export function loadSettings(): AppSettings {
