@@ -4,32 +4,32 @@ A Windows desktop application for downloading, trimming, and merging audio/video
 
 ## Features
 
-- **YouTube Downloader** — download audio (MP3) or video (MP4) from YouTube URLs using yt-dlp, with real-time progress tracking and download history
-- **Trimmer** — trim audio/video files to a specific time range using ffmpeg
-- **Merger** — merge multiple audio/video files into one using ffmpeg
-- **Settings** — configure download output folder, yt-dlp flags for MP3/MP4, UI theme (light/dark/system), and language (English/Lithuanian)
+-   **YouTube Downloader** — download audio (MP3) or video (MP4) from YouTube URLs using yt-dlp, with real-time progress tracking and download history
+-   **Trimmer** — trim audio/video files to a specific time range using ffmpeg
+-   **Merger** — merge multiple audio/video files into one using ffmpeg
+-   **Settings** — configure download output folder, yt-dlp flags for MP3/MP4, UI theme (light/dark/system), and language (English/Lithuanian)
 
 > **Windows only.** Bundled `yt-dlp.exe` and `ffmpeg.exe` executables are Windows binaries — macOS and Linux are not supported.
 
 ## Tech Stack
 
-- **[Electron](https://www.electronjs.org/)** — desktop runtime
-- **[React 19](https://react.dev/)** — UI framework
-- **[TypeScript](https://www.typescriptlang.org/)** — type-safe JavaScript
-- **[Vite](https://vitejs.dev/)** — bundler and dev server (via electron-forge plugin)
-- **[Electron Forge](https://www.electronforge.io/)** — build, package, and publish toolchain
-- **[Tailwind CSS v4](https://tailwindcss.com/)** — utility-first CSS framework (via PostCSS)
-- **[shadcn/ui](https://ui.shadcn.com/)** — component library built on Radix UI
-- **[i18next](https://www.i18next.com/)** — internationalization (English, Lithuanian)
-- **[yt-dlp](https://github.com/yt-dlp/yt-dlp)** — YouTube downloader (bundled Windows binary)
-- **[ffmpeg](https://ffmpeg.org/)** — audio/video processing (bundled Windows binary)
-- **[ESLint](https://eslint.org/)** + **[Prettier](https://prettier.io/)** — linting and formatting
+-   **[Electron](https://www.electronjs.org/)** — desktop runtime
+-   **[React 19](https://react.dev/)** — UI framework
+-   **[TypeScript](https://www.typescriptlang.org/)** — type-safe JavaScript
+-   **[Vite](https://vitejs.dev/)** — bundler and dev server (via electron-forge plugin)
+-   **[Electron Forge](https://www.electronforge.io/)** — build, package, and publish toolchain
+-   **[Tailwind CSS v4](https://tailwindcss.com/)** — utility-first CSS framework (via PostCSS)
+-   **[shadcn/ui](https://ui.shadcn.com/)** — component library built on Radix UI
+-   **[i18next](https://www.i18next.com/)** — internationalization (English, Lithuanian)
+-   **[yt-dlp](https://github.com/yt-dlp/yt-dlp)** — YouTube downloader (bundled Windows binary)
+-   **[ffmpeg](https://ffmpeg.org/)** — audio/video processing (bundled Windows binary)
+-   **[ESLint](https://eslint.org/)** + **[Prettier](https://prettier.io/)** — linting and formatting
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) v18+
-- npm v9+
-- Windows
+-   [Node.js](https://nodejs.org/) v18+
+-   npm v9+
+-   Windows
 
 ## Getting Started
 
@@ -89,8 +89,8 @@ npm run make
 
 Output is written to `out/`.
 
-| Platform | Output |
-|----------|--------|
+| Platform | Output                      |
+| -------- | --------------------------- |
 | Windows  | Squirrel installer (`.exe`) |
 
 ## Publishing a New Release
@@ -99,28 +99,18 @@ Releases are built and published automatically via GitHub Actions when a version
 
 1. Bump the version in `package.json`
 2. Commit the change:
-   ```bash
-   git add package.json
-   git commit -m "vX.Y.Z"
-   ```
+    ```bash
+    git add package.json
+    git commit -m "vX.Y.Z"
+    ```
 3. Tag and push:
-   ```bash
-   git tag vX.Y.Z
-   git push origin main
-   git push origin vX.Y.Z
-   ```
+    ```bash
+    git tag vX.Y.Z
+    git push origin main
+    git push origin vX.Y.Z
+    ```
 
 GitHub Actions will build the Windows installer and create a **draft** GitHub Release with the artifacts attached. Once you've verified the build, go to the [Releases page](https://github.com/simonasver/music_app/releases) and click **Publish release**.
-
-## Design System
-
-All design tokens (colors, radius, fonts) live in a single file:
-
-```
-src/renderer/config/design.ts
-```
-
-Edit values there to retheme the entire app — changes cascade automatically to all Tailwind utilities and shadcn components via CSS custom properties.
 
 ### Adding shadcn components
 
