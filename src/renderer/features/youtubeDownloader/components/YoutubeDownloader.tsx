@@ -148,16 +148,14 @@ export function YoutubeDownloader({ settings }: Props) {
                 />
             </div>
 
-            <div className="flex items-center justify-center gap-3">
+            <div className="flex items-center justify-center gap-3 mb-4">
                 <Button
-                    size="lg"
                     disabled={isDownloading || !url.trim()}
                     onClick={() => handleDownload(settings.youtubeDownloaderSettings.mp3Config)}
                 >
                     {t("downloader.downloadMp3")}
                 </Button>
                 <Button
-                    size="lg"
                     variant="secondary"
                     disabled={isDownloading || !url.trim()}
                     onClick={() => handleDownload(settings.youtubeDownloaderSettings.mp4Config)}
@@ -179,14 +177,14 @@ export function YoutubeDownloader({ settings }: Props) {
                             <div className="flex items-center gap-2 min-w-0">
                                 <span
                                     className={cn(
-                                        "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium shrink-0",
+                                        "inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold shrink-0",
                                         stageBadgeClass[progress.stage],
                                     )}
                                 >
                                     {stageText(progress)}
                                 </span>
                                 {progress.filename && (
-                                    <span className="text-xs text-muted-foreground truncate min-w-0">
+                                    <span className="text-sm text-muted-foreground truncate min-w-0">
                                         {progress.filename}
                                     </span>
                                 )}
@@ -195,9 +193,9 @@ export function YoutubeDownloader({ settings }: Props) {
                                 <Progress value={pctNum} indicatorClassName="bg-green-500" />
                             )}
                             {(progress.pct || progress.speed || progress.eta) && (
-                                <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                                <div className="flex items-center gap-3 text-sm text-muted-foreground">
                                     {progress.pct && (
-                                        <span className="font-medium text-foreground">
+                                        <span className="text-lg font-bold text-foreground">
                                             {progress.pct}
                                         </span>
                                     )}
@@ -230,7 +228,7 @@ export function YoutubeDownloader({ settings }: Props) {
                 </TabsContent>
                 <TabsContent value={DownloadInfoTab.Output} className="flex-1 mt-1 min-h-0">
                     <ScrollArea className="h-full rounded-md border border-border bg-muted/30">
-                        <pre className="font-mono text-sm p-4 whitespace-pre-wrap wrap-break-word">
+                        <pre className="font-mono text-lg p-4 whitespace-pre-wrap wrap-break-word">
                             {outputLines.join("\n")}
                             <div ref={bottomRef} />
                         </pre>

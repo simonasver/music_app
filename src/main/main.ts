@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog, shell } from "electron";
+import { app, BrowserWindow, ipcMain, dialog, shell, Menu } from "electron";
 import fs from "node:fs";
 import path from "node:path";
 import started from "electron-squirrel-startup";
@@ -36,6 +36,29 @@ const createWindow = () => {
             path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`),
         );
     }
+
+    mainWindow.webContents.on("context-menu", (_event, params) => {
+        const { isEditable, selectionText } = params;
+        const hasSelection = selectionText.trim().length > 0;
+
+        if (!isEditable && !hasSelection) return;
+
+        const menuItems: Electron.MenuItemConstructorOptions[] = [];
+
+        if (isEditable) {
+            menuItems.push(
+                { label: "Cut", role: "cut", enabled: hasSelection },
+                { label: "Copy", role: "copy", enabled: hasSelection },
+                { label: "Paste", role: "paste" },
+                { type: "separator" },
+                { label: "Select All", role: "selectAll" },
+            );
+        } else {
+            menuItems.push({ label: "Copy", role: "copy" });
+        }
+
+        Menu.buildFromTemplate(menuItems).popup({ window: mainWindow });
+    });
 
     if (!app.isPackaged) {
         mainWindow.webContents.openDevTools();
