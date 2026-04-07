@@ -10,7 +10,7 @@ export interface HistoryEntry {
 }
 
 function historyFilePath(): string {
-    return path.join(app.getPath("appData"), "music_app", "history.jsonl");
+    return path.join(app.getPath("userData"), "history.jsonl");
 }
 
 export function appendHistoryEntry(entry: HistoryEntry): void {

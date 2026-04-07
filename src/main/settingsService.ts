@@ -23,7 +23,7 @@ export const DEFAULTS: AppSettings = {
     youtubeDownloaderSettings: {
         downloadFileLocation: path.join(os.homedir(), "Downloads"),
         mp3Config:
-            "-f bestaudio -x --audio-format mp3 --audio-quality 0 --no-mtime --no-playlist --no-overwrites --embed-thumbnail",
+            "-f bestaudio -x --audio-format mp3 --audio-quality 0 --no-mtime --no-playlist --no-overwrites --embed-thumbnail --embed-metadata",
         mp4Config: "-f bestvideo+bestaudio --no-mtime --no-playlist --no-overwrites",
     },
 };
