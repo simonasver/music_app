@@ -131,15 +131,19 @@ function registerIpcHandlers() {
 
     ipcMain.handle("settings:save", (_event, data) => saveSettings(data));
 
-    ipcMain.handle("download:start", (event, url: string, flags: string, outputDir: string) => {
-        startDownload(
-            url,
-            flags,
-            outputDir,
-            (line: string) => event.sender.send("download:output", line),
-            (code: number | null) => event.sender.send("download:complete", code),
-        );
-    });
+    ipcMain.handle(
+        "download:start",
+        (event, url: string, flags: string, outputDir: string, splitChapters: boolean) => {
+            startDownload(
+                url,
+                flags,
+                outputDir,
+                splitChapters,
+                (line: string) => event.sender.send("download:output", line),
+                (code: number | null) => event.sender.send("download:complete", code),
+            );
+        },
+    );
 
     ipcMain.on("download:cancel", () => cancelDownload());
 

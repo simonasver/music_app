@@ -25,7 +25,7 @@ declare global {
             getSettings(): Promise<AppSettings>;
             getDefaultSettings(): Promise<AppSettings>;
             saveSettings(settings: AppSettings): Promise<void>;
-            startDownload(url: string, flags: string, outputDir: string): Promise<void>;
+            startDownload(url: string, flags: string, outputDir: string, splitChapters?: boolean): Promise<void>;
             cancelDownload(): void;
             selectFolder(): Promise<string | null>;
             onDownloadOutput(cb: (line: string) => void): () => void;

@@ -39,6 +39,7 @@ export function YoutubeDownloader({ settings }: Props) {
     const { t } = useTranslation();
     const toast = useToast();
     const [url, setUrl] = useState("");
+    const [splitChapters, setSplitChapters] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
     const [outputLines, setOutputLines] = useState<string[]>([]);
     const [history, setHistory] = useState<HistoryEntry[]>([]);
@@ -122,6 +123,7 @@ export function YoutubeDownloader({ settings }: Props) {
             pendingUrlRef.current,
             flags,
             settings.youtubeDownloaderSettings.downloadFileLocation,
+            splitChapters,
         );
     }
 
@@ -168,6 +170,17 @@ export function YoutubeDownloader({ settings }: Props) {
                     </Button>
                 )}
             </div>
+
+            <label className="flex items-center justify-center gap-2 text-sm cursor-pointer select-none mb-4">
+                <input
+                    type="checkbox"
+                    checked={splitChapters}
+                    onChange={(e) => setSplitChapters(e.target.checked)}
+                    disabled={isDownloading}
+                    className="rounded border-input accent-primary"
+                />
+                {t("downloader.splitChapters")}
+            </label>
 
             {(isDownloading || progress.stage !== "idle") &&
                 (() => {

@@ -8,8 +8,12 @@ contextBridge.exposeInMainWorld("electronAPI", {
     saveSettings: (settings: AppSettings): Promise<void> =>
         ipcRenderer.invoke("settings:save", settings),
 
-    startDownload: (url: string, flags: string, outputDir: string): Promise<void> =>
-        ipcRenderer.invoke("download:start", url, flags, outputDir),
+    startDownload: (
+        url: string,
+        flags: string,
+        outputDir: string,
+        splitChapters?: boolean,
+    ): Promise<void> => ipcRenderer.invoke("download:start", url, flags, outputDir, splitChapters ?? false),
 
     cancelDownload: (): void => {
         ipcRenderer.send("download:cancel");
