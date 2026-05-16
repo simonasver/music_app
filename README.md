@@ -157,3 +157,11 @@ src/
         ├── en.json          # English translations
         └── lt.json          # Lithuanian translations
 ```
+
+## TO-DO
+
+1. Add "open folder" next to download history
+2. Download history pagination
+3. Automatic trim split by pasted structure
+4. Make enabled download buttons more visible and different from the disabled ones. Cyan is too bright.
+5. Add thumbnail modification - add, change, remove
