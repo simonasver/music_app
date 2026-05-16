@@ -5,6 +5,7 @@ import { YoutubeDownloader } from "@/features/youtubeDownloader/components/Youtu
 import { Settings } from "@/features/settings/components/Settings";
 import { Trimmer } from "@/features/trimmer/components/Trimmer";
 import { Merger } from "@/features/merger/components/Merger";
+import { CoverArt } from "@/features/coverArt/components/CoverArt";
 import { ToastProvider } from "@/lib/toast";
 import type { AppSettings as AppSettingsType } from "./env.d";
 import i18n, { detectSystemLanguage } from "./i18n";
@@ -32,6 +33,7 @@ enum AppTab {
     YoutubeDownloader = "YoutubeDownloader",
     Trim = "Trim",
     Merge = "Merge",
+    CoverArt = "CoverArt",
     Settings = "Settings",
 }
 
@@ -83,6 +85,12 @@ export function App() {
                         {t("tabs.merge")}
                     </TabsTrigger>
                     <TabsTrigger
+                        value={AppTab.CoverArt}
+                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-6 py-3"
+                    >
+                        {t("tabs.coverArt")}
+                    </TabsTrigger>
+                    <TabsTrigger
                         value={AppTab.Settings}
                         className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-6 py-3"
                     >
@@ -109,6 +117,13 @@ export function App() {
                     forceMount
                 >
                     <Merger />
+                </TabsContent>
+                <TabsContent
+                    value={AppTab.CoverArt}
+                    className="flex-1 overflow-auto mt-0 data-[state=inactive]:hidden"
+                    forceMount
+                >
+                    <CoverArt />
                 </TabsContent>
                 <TabsContent
                     value={AppTab.Settings}

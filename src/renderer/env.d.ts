@@ -50,6 +50,10 @@ declare global {
             }): Promise<{ outputPath: string }>;
             saveFile(): Promise<string | null>;
             getPathForFile(file: File): string;
+            getThumbnail(filePath: string): Promise<string | null>;
+            setThumbnail(filePath: string, imagePath: string): Promise<void>;
+            removeThumbnail(filePath: string): Promise<void>;
+            selectImageFile(): Promise<string | null>;
         };
     }
 }

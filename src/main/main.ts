@@ -6,6 +6,7 @@ import { loadSettings, saveSettings, getDefaults } from "./settingsService";
 import { startDownload, cancelDownload } from "./downloadService";
 import { executeTrim } from "./trimService";
 import { executeMerge } from "./mergeService";
+import { getThumbnail, setThumbnail, removeThumbnail } from "./thumbnailService";
 import {
     appendHistoryEntry,
     getAllHistory,
@@ -201,4 +202,18 @@ function registerIpcHandlers() {
     });
 
     ipcMain.handle("file:read", (_event, filePath: string) => fs.readFileSync(filePath));
+
+    ipcMain.handle("thumbnail:get", (_event, filePath: string) => getThumbnail(filePath));
+    ipcMain.handle("thumbnail:set", (_event, filePath: string, imagePath: string) =>
+        setThumbnail(filePath, imagePath),
+    );
+    ipcMain.handle("thumbnail:remove", (_event, filePath: string) => removeThumbnail(filePath));
+
+    ipcMain.handle("dialog:select-image", async () => {
+        const result = await dialog.showOpenDialog({
+            properties: ["openFile"],
+            filters: [{ name: "Images", extensions: ["jpg", "jpeg", "png", "webp", "bmp"] }],
+        });
+        return result.canceled ? null : result.filePaths[0];
+    });
 }

@@ -3,6 +3,7 @@
         "youtubeDownloader": "YouTube atsisiuntimas",
         "trim": "Apkarpymas",
         "merge": "Sujungimas",
+        "coverArt": "Viršelio paveikslas",
         "settings": "Nustatymai"
     },
     "settings": {
@@ -96,6 +97,20 @@
         "play": "Groti",
         "pause": "Pristabdyti",
         "totalDuration": "Viso"
+    },
+    "coverArt": {
+        "selectFile": "Pasirinkti garso failą",
+        "currentThumbnail": "Esamas paveikslėlis",
+        "noThumbnail": "Paveikslėlio nėra",
+        "newImage": "Naujas paveikslėlis",
+        "selectImage": "Pasirinkti paveikslėlį",
+        "update": "Atnaujinti paveikslėlį",
+        "updating": "Atnaujinama…",
+        "remove": "Pašalinti paveikslėlį",
+        "removing": "Šalinama…",
+        "updateSuccess": "Paveikslėlis atnaujintas",
+        "removeSuccess": "Paveikslėlis pašalintas",
+        "error": "Operacija nepavyko"
     },
     "common": {
         "areYouSure": "Ar tikrai?",

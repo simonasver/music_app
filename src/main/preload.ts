@@ -66,4 +66,15 @@ contextBridge.exposeInMainWorld("electronAPI", {
     saveFile: (): Promise<string | null> => ipcRenderer.invoke("dialog:save-file"),
 
     getPathForFile: (file: File): string => webUtils.getPathForFile(file),
+
+    getThumbnail: (filePath: string): Promise<string | null> =>
+        ipcRenderer.invoke("thumbnail:get", filePath),
+
+    setThumbnail: (filePath: string, imagePath: string): Promise<void> =>
+        ipcRenderer.invoke("thumbnail:set", filePath, imagePath),
+
+    removeThumbnail: (filePath: string): Promise<void> =>
+        ipcRenderer.invoke("thumbnail:remove", filePath),
+
+    selectImageFile: (): Promise<string | null> => ipcRenderer.invoke("dialog:select-image"),
 });

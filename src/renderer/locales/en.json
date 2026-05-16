@@ -3,6 +3,7 @@
         "youtubeDownloader": "YouTube Downloader",
         "trim": "Trim",
         "merge": "Merge",
+        "coverArt": "Cover Art",
         "settings": "Settings"
     },
     "settings": {
@@ -96,6 +97,20 @@
         "play": "Play",
         "pause": "Pause",
         "totalDuration": "Total"
+    },
+    "coverArt": {
+        "selectFile": "Select Audio File",
+        "currentThumbnail": "Current Thumbnail",
+        "noThumbnail": "No thumbnail",
+        "newImage": "New Image",
+        "selectImage": "Select Image",
+        "update": "Update Thumbnail",
+        "updating": "Updating…",
+        "remove": "Remove Thumbnail",
+        "removing": "Removing…",
+        "updateSuccess": "Thumbnail updated",
+        "removeSuccess": "Thumbnail removed",
+        "error": "Operation failed"
     },
     "common": {
         "areYouSure": "Are you sure?",
