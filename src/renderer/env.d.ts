@@ -54,6 +54,7 @@ declare global {
             setThumbnail(filePath: string, imagePath: string): Promise<void>;
             removeThumbnail(filePath: string): Promise<void>;
             selectImageFile(): Promise<string | null>;
+            writeTempImage(data: ArrayBuffer, ext: string): Promise<string>;
         };
     }
 }

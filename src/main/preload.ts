@@ -77,4 +77,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
         ipcRenderer.invoke("thumbnail:remove", filePath),
 
     selectImageFile: (): Promise<string | null> => ipcRenderer.invoke("dialog:select-image"),
+
+    writeTempImage: (data: ArrayBuffer, ext: string): Promise<string> =>
+        ipcRenderer.invoke("thumbnail:write-temp-image", data, ext),
 });

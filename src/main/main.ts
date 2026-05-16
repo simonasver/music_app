@@ -6,7 +6,7 @@ import { loadSettings, saveSettings, getDefaults } from "./settingsService";
 import { startDownload, cancelDownload } from "./downloadService";
 import { executeTrim } from "./trimService";
 import { executeMerge } from "./mergeService";
-import { getThumbnail, setThumbnail, removeThumbnail } from "./thumbnailService";
+import { getThumbnail, setThumbnail, removeThumbnail, writeTempImage } from "./thumbnailService";
 import {
     appendHistoryEntry,
     getAllHistory,
@@ -208,6 +208,10 @@ function registerIpcHandlers() {
         setThumbnail(filePath, imagePath),
     );
     ipcMain.handle("thumbnail:remove", (_event, filePath: string) => removeThumbnail(filePath));
+
+    ipcMain.handle("thumbnail:write-temp-image", (_event, buffer: Buffer, ext: string) =>
+        writeTempImage(buffer, ext),
+    );
 
     ipcMain.handle("dialog:select-image", async () => {
         const result = await dialog.showOpenDialog({

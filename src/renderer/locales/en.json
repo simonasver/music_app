@@ -110,7 +110,11 @@
         "removing": "Removing…",
         "updateSuccess": "Thumbnail updated",
         "removeSuccess": "Thumbnail removed",
-        "error": "Operation failed"
+        "error": "Operation failed",
+        "changeFile": "Change File",
+        "dropAudioFile": "Drop audio file here",
+        "dropImageHere": "Drop image here",
+        "pasteHint": "Or paste image from clipboard"
     },
     "common": {
         "areYouSure": "Are you sure?",

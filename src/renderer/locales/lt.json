@@ -110,7 +110,11 @@
         "removing": "Šalinama…",
         "updateSuccess": "Paveikslėlis atnaujintas",
         "removeSuccess": "Paveikslėlis pašalintas",
-        "error": "Operacija nepavyko"
+        "error": "Operacija nepavyko",
+        "changeFile": "Keisti failą",
+        "dropAudioFile": "Įtempkite garso failą čia",
+        "dropImageHere": "Įtempkite paveikslėlį čia",
+        "pasteHint": "Arba įklijuokite paveikslėlį iš iškarpinės"
     },
     "common": {
         "areYouSure": "Ar tikrai?",

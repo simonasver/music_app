@@ -7,29 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-
-const MEDIA_EXTENSIONS = new Set([
-    "mp3",
-    "mp4",
-    "wav",
-    "ogg",
-    "flac",
-    "m4a",
-    "aac",
-    "opus",
-    "wma",
-    "webm",
-    "mkv",
-    "avi",
-    "mov",
-    "m4v",
-]);
-
-function getMediaPath(files: FileList): string | null {
-    const file = files[0];
-    const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
-    return MEDIA_EXTENSIONS.has(ext) ? window.electronAPI.getPathForFile(file) : null;
-}
+import { getMediaPath } from "@/config/config";
 
 export function Trimmer() {
     const { t } = useTranslation();

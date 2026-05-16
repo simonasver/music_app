@@ -153,6 +153,13 @@ export async function setThumbnail(filePath: string, imagePath: string): Promise
     }
 }
 
+export async function writeTempImage(buffer: ArrayBuffer, ext: string): Promise<string> {
+    const safe = ["jpg", "jpeg", "png", "webp", "bmp"].includes(ext) ? ext : "jpg";
+    const tempPath = path.join(app.getPath("temp"), `cover_paste_${randomUUID()}.${safe}`);
+    fs.writeFileSync(tempPath, Buffer.from(buffer));
+    return tempPath;
+}
+
 export async function removeThumbnail(filePath: string): Promise<void> {
     const ext = path.extname(filePath).toLowerCase();
     const dir = path.dirname(filePath);
