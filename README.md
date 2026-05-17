@@ -165,3 +165,4 @@ src/
 3. Automatic trim split by pasted structure
 4. Make enabled download buttons more visible and different from the disabled ones. Cyan is too bright.
 5. Add thumbnail modification - add, change, remove
+6. Add semi-automatic split by chapters. Automatically load and display splits, additionally showing each item in a list, with changeable start, name (which will be saved to)
