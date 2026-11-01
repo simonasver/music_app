@@ -8,6 +8,10 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { isMediaFileName, mediaUrl } from "@shared/media";
+import { formatTime, parseTime } from "../lib/time";
+
+const NUDGE_DECREASE_STEPS = [-1, -0.1];
+const NUDGE_INCREASE_STEPS = [0.1, 1];
 
 function getMediaPath(files: FileList): string | null {
     const file = files[0];
@@ -30,6 +34,8 @@ export function Trimmer() {
     const [loadFailed, setLoadFailed] = useState(false);
     const [hasVideo, setHasVideo] = useState(false);
     const [playbackUnavailable, setPlaybackUnavailable] = useState(false);
+    const [startDraft, setStartDraft] = useState<string | null>(null);
+    const [endDraft, setEndDraft] = useState<string | null>(null);
 
     const videoRef = useRef<HTMLVideoElement>(null);
     const waveContainerRef = useRef<HTMLDivElement>(null);
@@ -156,16 +162,39 @@ export function Trimmer() {
         setReplaceOriginal(false);
     }
 
-    function handleStartChange(value: string) {
-        const n = parseFloat(value);
-        if (!isFinite(n)) return;
+    function handleStartChange(n: number) {
         setTrimStart(Math.max(0, Math.min(n, trimEnd - 0.1)));
     }
 
-    function handleEndChange(value: string) {
-        const n = parseFloat(value);
-        if (!isFinite(n)) return;
+    function handleEndChange(n: number) {
         setTrimEnd(Math.max(trimStart + 0.1, Math.min(n, duration)));
+    }
+
+    function commitDraft(draft: string | null, apply: (n: number) => void) {
+        if (draft === null) return;
+        const n = parseTime(draft);
+        if (n !== null) apply(n);
+    }
+
+    function handleTimeKeyDown(e: React.KeyboardEvent<HTMLInputElement>, revert: () => void) {
+        if (e.key === "Enter") e.currentTarget.blur();
+        if (e.key === "Escape") revert();
+    }
+
+    function renderNudgeButtons(steps: number[], value: number, apply: (n: number) => void) {
+        return steps.map((step) => (
+            <Button
+                key={step}
+                variant="outline"
+                size="sm"
+                className="px-2 tabular-nums"
+                onClick={() => apply(Math.round((value + step) * 1000) / 1000)}
+                disabled={!isLoaded || isTrimming}
+            >
+                {step > 0 ? "+" : "−"}
+                {Math.abs(step)}s
+            </Button>
+        ));
     }
 
     async function handleSave() {
@@ -261,7 +290,7 @@ export function Trimmer() {
                         </Button>
                         {isLoaded && (
                             <span className="text-xs text-muted-foreground">
-                                {t("trimmer.totalDuration")}: {duration.toFixed(2)}s
+                                {t("trimmer.totalDuration")}: {formatTime(duration)}
                             </span>
                         )}
                         {!isLoaded && !loadFailed && (
@@ -285,32 +314,58 @@ export function Trimmer() {
                     <div className="flex items-end gap-4">
                         <div className="flex flex-col gap-1.5 flex-1">
                             <Label htmlFor="trim-start">{t("trimmer.startSeconds")}</Label>
-                            <Input
-                                id="trim-start"
-                                type="number"
-                                min={0}
-                                max={trimEnd - 0.1}
-                                step={0.1}
-                                value={trimStart.toFixed(2)}
-                                onChange={(e) => handleStartChange(e.target.value)}
-                                disabled={!isLoaded || isTrimming}
-                            />
+                            <div className="flex items-center gap-1">
+                                {renderNudgeButtons(
+                                    NUDGE_DECREASE_STEPS,
+                                    trimStart,
+                                    handleStartChange,
+                                )}
+                                <Input
+                                    id="trim-start"
+                                    type="text"
+                                    spellCheck={false}
+                                    className="min-w-0 tabular-nums"
+                                    value={startDraft ?? formatTime(trimStart)}
+                                    onChange={(e) => setStartDraft(e.target.value)}
+                                    onBlur={() => {
+                                        commitDraft(startDraft, handleStartChange);
+                                        setStartDraft(null);
+                                    }}
+                                    onKeyDown={(e) =>
+                                        handleTimeKeyDown(e, () => setStartDraft(null))
+                                    }
+                                    disabled={!isLoaded || isTrimming}
+                                />
+                                {renderNudgeButtons(
+                                    NUDGE_INCREASE_STEPS,
+                                    trimStart,
+                                    handleStartChange,
+                                )}
+                            </div>
                         </div>
                         <div className="flex flex-col gap-1.5 flex-1">
                             <Label htmlFor="trim-end">{t("trimmer.endSeconds")}</Label>
-                            <Input
-                                id="trim-end"
-                                type="number"
-                                min={trimStart + 0.1}
-                                max={duration}
-                                step={0.1}
-                                value={trimEnd.toFixed(2)}
-                                onChange={(e) => handleEndChange(e.target.value)}
-                                disabled={!isLoaded || isTrimming}
-                            />
+                            <div className="flex items-center gap-1">
+                                {renderNudgeButtons(NUDGE_DECREASE_STEPS, trimEnd, handleEndChange)}
+                                <Input
+                                    id="trim-end"
+                                    type="text"
+                                    spellCheck={false}
+                                    className="min-w-0 tabular-nums"
+                                    value={endDraft ?? formatTime(trimEnd)}
+                                    onChange={(e) => setEndDraft(e.target.value)}
+                                    onBlur={() => {
+                                        commitDraft(endDraft, handleEndChange);
+                                        setEndDraft(null);
+                                    }}
+                                    onKeyDown={(e) => handleTimeKeyDown(e, () => setEndDraft(null))}
+                                    disabled={!isLoaded || isTrimming}
+                                />
+                                {renderNudgeButtons(NUDGE_INCREASE_STEPS, trimEnd, handleEndChange)}
+                            </div>
                         </div>
                         <div className="pb-2.5 text-sm text-muted-foreground whitespace-nowrap">
-                            {t("trimmer.selectionDuration")}: {selectedDuration.toFixed(2)}s
+                            {t("trimmer.selectionDuration")}: {formatTime(selectedDuration)}
                         </div>
                     </div>
 
