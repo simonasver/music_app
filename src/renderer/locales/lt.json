@@ -84,7 +84,8 @@
         "trimComplete": "Išsaugota į {{path}}",
         "trimError": "Apkarpyti nepavyko",
         "loading": "Įkeliama garso banga…",
-        "loadError": "Nepavyko įkelti šio failo"
+        "loadError": "Nepavyko įkelti šio failo",
+        "playbackUnavailable": "Šio formato atkurti negalima. Vis tiek galite apkarpyti pagal laiką."
     },
     "merger": {
         "addFiles": "Pridėti failus",

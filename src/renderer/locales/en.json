@@ -84,7 +84,8 @@
         "trimComplete": "Saved to {{path}}",
         "trimError": "Trim failed",
         "loading": "Loading waveform…",
-        "loadError": "Could not load this file"
+        "loadError": "Could not load this file",
+        "playbackUnavailable": "Playback isn't supported for this format. You can still trim by time."
     },
     "merger": {
         "addFiles": "Add Files",
