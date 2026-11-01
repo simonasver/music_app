@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Pause, Play } from "lucide-react";
 import WaveSurfer from "wavesurfer.js";
 import RegionsPlugin, { type Region } from "wavesurfer.js/dist/plugins/regions";
 import { Button } from "@/components/ui/button";
@@ -10,8 +11,26 @@ import { cn } from "@/lib/utils";
 import { isMediaFileName, mediaUrl } from "@shared/media";
 import { formatTime, parseTime } from "../lib/time";
 
-const NUDGE_DECREASE_STEPS = [-1, -0.1];
-const NUDGE_INCREASE_STEPS = [0.1, 1];
+/** Step sizes in seconds, in increasing order. Each is mirrored into a −/+ pair. */
+const TRIM_NUDGE_STEPS = [0.1, 1];
+const SKIP_STEPS = [1, 10, 30];
+
+/** Turns increasing steps into mirrored button rows: [−largest … −smallest] and [+smallest … +largest] */
+function mirrorSteps(steps: number[]): { decrease: number[]; increase: number[] } {
+    return { decrease: steps.map((step) => -step).reverse(), increase: steps };
+}
+
+function formatStep(step: number): string {
+    return `${step > 0 ? "+" : "−"}${Math.abs(step)}s`;
+}
+
+const TRIM_NUDGES = mirrorSteps(TRIM_NUDGE_STEPS);
+const SKIPS = mirrorSteps(SKIP_STEPS);
+
+/** Playhead within this distance of the region end counts as "at the end" */
+const END_TOLERANCE = 0.05;
+
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
 function getMediaPath(files: FileList): string | null {
     const file = files[0];
@@ -36,8 +55,10 @@ export function Trimmer() {
     const [playbackUnavailable, setPlaybackUnavailable] = useState(false);
     const [startDraft, setStartDraft] = useState<string | null>(null);
     const [endDraft, setEndDraft] = useState<string | null>(null);
+    const [currentTime, setCurrentTime] = useState(0);
 
     const videoRef = useRef<HTMLVideoElement>(null);
+    const trimRangeRef = useRef({ start: 0, end: 0 });
     const waveContainerRef = useRef<HTMLDivElement>(null);
     const wavesurferRef = useRef<WaveSurfer | null>(null);
     const regionRef = useRef<Region | null>(null);
@@ -56,6 +77,7 @@ export function Trimmer() {
         setHasVideo(false);
         setPlaybackUnavailable(false);
         setIsPlaying(false);
+        setCurrentTime(0);
 
         const root = document.documentElement;
         const cssVar = (name: string) =>
@@ -73,7 +95,7 @@ export function Trimmer() {
 
                 const regionsPlugin = RegionsPlugin.create();
 
-                ws = WaveSurfer.create({
+                const instance = WaveSurfer.create({
                     container,
                     waveColor: cssVar("--primary"),
                     progressColor: cssVarAlpha("--primary", 0.5),
@@ -87,6 +109,7 @@ export function Trimmer() {
                     plugins: [regionsPlugin],
                 });
 
+                ws = instance;
                 wavesurferRef.current = ws;
 
                 ws.on("ready", (dur) => {
@@ -115,6 +138,21 @@ export function Trimmer() {
                 ws.on("play", () => setIsPlaying(true));
                 ws.on("pause", () => setIsPlaying(false));
                 ws.on("finish", () => setIsPlaying(false));
+
+                ws.on("timeupdate", (time) => {
+                    setCurrentTime(time);
+                    const { end } = trimRangeRef.current;
+                    if (instance.isPlaying() && time >= end) {
+                        instance.pause();
+                        instance.setTime(end);
+                    }
+                });
+
+                ws.on("interaction", (time) => {
+                    const { start, end } = trimRangeRef.current;
+                    const clamped = clamp(time, start, end);
+                    if (clamped !== time) instance.setTime(clamped);
+                });
             })
             .catch(() => {
                 if (!cancelled) setLoadFailed(true);
@@ -123,6 +161,7 @@ export function Trimmer() {
         return () => {
             cancelled = true;
             ws?.destroy();
+            if (wavesurferRef.current === ws) wavesurferRef.current = null;
             video.pause();
             video.removeAttribute("src");
             video.load();
@@ -137,6 +176,34 @@ export function Trimmer() {
             region.setOptions({ start: trimStart, end: trimEnd });
         }
     }, [trimStart, trimEnd]);
+
+    // Keep the playhead inside the selected region
+    useEffect(() => {
+        trimRangeRef.current = { start: trimStart, end: trimEnd };
+        const ws = wavesurferRef.current;
+        if (!ws) return;
+        const time = ws.getCurrentTime();
+        const clamped = clamp(time, trimStart, trimEnd);
+        if (clamped !== time) ws.setTime(clamped);
+    }, [trimStart, trimEnd]);
+
+    function handlePlayPause() {
+        const ws = wavesurferRef.current;
+        if (!ws) return;
+        if (ws.isPlaying()) {
+            ws.pause();
+            return;
+        }
+        const time = ws.getCurrentTime();
+        if (time < trimStart || time >= trimEnd - END_TOLERANCE) ws.setTime(trimStart);
+        ws.play();
+    }
+
+    function handleSkip(delta: number) {
+        const ws = wavesurferRef.current;
+        if (!ws) return;
+        ws.setTime(clamp(ws.getCurrentTime() + delta, trimStart, trimEnd));
+    }
 
     async function handleSelectFile() {
         const selected = await window.electronAPI.selectMediaFile();
@@ -181,21 +248,27 @@ export function Trimmer() {
         if (e.key === "Escape") revert();
     }
 
-    function renderNudgeButtons(steps: number[], value: number, apply: (n: number) => void) {
+    function renderStepButtons(steps: number[], onStep: (step: number) => void, disabled: boolean) {
         return steps.map((step) => (
             <Button
                 key={step}
                 variant="outline"
                 size="sm"
                 className="px-2 tabular-nums"
-                onClick={() => apply(Math.round((value + step) * 1000) / 1000)}
-                disabled={!isLoaded || isTrimming}
+                onClick={() => onStep(step)}
+                disabled={disabled}
             >
-                {step > 0 ? "+" : "−"}
-                {Math.abs(step)}s
+                {formatStep(step)}
             </Button>
         ));
     }
+
+    function nudge(value: number, apply: (n: number) => void) {
+        return (step: number) => apply(Math.round((value + step) * 1000) / 1000);
+    }
+
+    const trimControlsDisabled = !isLoaded || isTrimming;
+    const playbackDisabled = !isLoaded || isTrimming || playbackUnavailable;
 
     async function handleSave() {
         if (!filePath || !isLoaded) return;
@@ -279,35 +352,39 @@ export function Trimmer() {
                     />
 
                     {/* Playback */}
-                    <div className="flex items-center gap-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => wavesurferRef.current?.playPause()}
-                            disabled={!isLoaded || isTrimming || playbackUnavailable}
-                        >
-                            {isPlaying ? t("trimmer.pause") : t("trimmer.play")}
-                        </Button>
-                        {isLoaded && (
-                            <span className="text-xs text-muted-foreground">
-                                {t("trimmer.totalDuration")}: {formatTime(duration)}
-                            </span>
-                        )}
-                        {!isLoaded && !loadFailed && (
-                            <span className="text-xs text-muted-foreground">
-                                {t("trimmer.loading")}
-                            </span>
-                        )}
-                        {loadFailed && (
-                            <span className="text-xs text-destructive">
-                                {t("trimmer.loadError")}
-                            </span>
-                        )}
-                        {playbackUnavailable && (
-                            <span className="text-xs text-muted-foreground">
-                                {t("trimmer.playbackUnavailable")}
-                            </span>
-                        )}
+                    <div className="flex flex-col items-center gap-2">
+                        <div className="flex items-center justify-center gap-2">
+                            {renderStepButtons(SKIPS.decrease, handleSkip, playbackDisabled)}
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-12"
+                                onClick={handlePlayPause}
+                                disabled={playbackDisabled}
+                                aria-label={isPlaying ? t("trimmer.pause") : t("trimmer.play")}
+                                title={isPlaying ? t("trimmer.pause") : t("trimmer.play")}
+                            >
+                                {isPlaying ? <Pause /> : <Play />}
+                            </Button>
+                            {renderStepButtons(SKIPS.increase, handleSkip, playbackDisabled)}
+                        </div>
+                        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                            {isLoaded && (
+                                <span className="tabular-nums text-foreground">
+                                    {formatTime(currentTime)} / {formatTime(trimEnd)}
+                                </span>
+                            )}
+                            {isLoaded && (
+                                <span className="tabular-nums">
+                                    {t("trimmer.totalDuration")}: {formatTime(duration)}
+                                </span>
+                            )}
+                            {!isLoaded && !loadFailed && <span>{t("trimmer.loading")}</span>}
+                            {loadFailed && (
+                                <span className="text-destructive">{t("trimmer.loadError")}</span>
+                            )}
+                            {playbackUnavailable && <span>{t("trimmer.playbackUnavailable")}</span>}
+                        </div>
                     </div>
 
                     {/* Trim inputs */}
@@ -315,10 +392,10 @@ export function Trimmer() {
                         <div className="flex flex-col gap-1.5 flex-1">
                             <Label htmlFor="trim-start">{t("trimmer.startSeconds")}</Label>
                             <div className="flex items-center gap-1">
-                                {renderNudgeButtons(
-                                    NUDGE_DECREASE_STEPS,
-                                    trimStart,
-                                    handleStartChange,
+                                {renderStepButtons(
+                                    TRIM_NUDGES.decrease,
+                                    nudge(trimStart, handleStartChange),
+                                    trimControlsDisabled,
                                 )}
                                 <Input
                                     id="trim-start"
@@ -336,17 +413,21 @@ export function Trimmer() {
                                     }
                                     disabled={!isLoaded || isTrimming}
                                 />
-                                {renderNudgeButtons(
-                                    NUDGE_INCREASE_STEPS,
-                                    trimStart,
-                                    handleStartChange,
+                                {renderStepButtons(
+                                    TRIM_NUDGES.increase,
+                                    nudge(trimStart, handleStartChange),
+                                    trimControlsDisabled,
                                 )}
                             </div>
                         </div>
                         <div className="flex flex-col gap-1.5 flex-1">
                             <Label htmlFor="trim-end">{t("trimmer.endSeconds")}</Label>
                             <div className="flex items-center gap-1">
-                                {renderNudgeButtons(NUDGE_DECREASE_STEPS, trimEnd, handleEndChange)}
+                                {renderStepButtons(
+                                    TRIM_NUDGES.decrease,
+                                    nudge(trimEnd, handleEndChange),
+                                    trimControlsDisabled,
+                                )}
                                 <Input
                                     id="trim-end"
                                     type="text"
@@ -361,7 +442,11 @@ export function Trimmer() {
                                     onKeyDown={(e) => handleTimeKeyDown(e, () => setEndDraft(null))}
                                     disabled={!isLoaded || isTrimming}
                                 />
-                                {renderNudgeButtons(NUDGE_INCREASE_STEPS, trimEnd, handleEndChange)}
+                                {renderStepButtons(
+                                    TRIM_NUDGES.increase,
+                                    nudge(trimEnd, handleEndChange),
+                                    trimControlsDisabled,
+                                )}
                             </div>
                         </div>
                         <div className="pb-2.5 text-sm text-muted-foreground whitespace-nowrap">
