@@ -55,6 +55,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
     readFile: (filePath: string): Promise<Buffer> => ipcRenderer.invoke("file:read", filePath),
 
+    getMediaPeaks: (filePath: string): Promise<{ peaks: Float32Array; duration: number }> =>
+        ipcRenderer.invoke("media:peaks", filePath),
+
     selectMediaFiles: (): Promise<string[]> =>
         ipcRenderer.invoke("dialog:select-media-file", { multi: true }),
 

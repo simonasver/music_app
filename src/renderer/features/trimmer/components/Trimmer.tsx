@@ -7,28 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-
-const MEDIA_EXTENSIONS = new Set([
-    "mp3",
-    "mp4",
-    "wav",
-    "ogg",
-    "flac",
-    "m4a",
-    "aac",
-    "opus",
-    "wma",
-    "webm",
-    "mkv",
-    "avi",
-    "mov",
-    "m4v",
-]);
+import { isMediaFileName, mediaUrl } from "@shared/media";
 
 function getMediaPath(files: FileList): string | null {
     const file = files[0];
-    const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
-    return MEDIA_EXTENSIONS.has(ext) ? window.electronAPI.getPathForFile(file) : null;
+    return isMediaFileName(file.name) ? window.electronAPI.getPathForFile(file) : null;
 }
 
 export function Trimmer() {
@@ -44,6 +27,7 @@ export function Trimmer() {
     const [isTrimming, setIsTrimming] = useState(false);
     const [replaceOriginal, setReplaceOriginal] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [loadFailed, setLoadFailed] = useState(false);
 
     const waveContainerRef = useRef<HTMLDivElement>(null);
     const wavesurferRef = useRef<WaveSurfer | null>(null);
@@ -54,9 +38,11 @@ export function Trimmer() {
     useEffect(() => {
         if (!filePath || !waveContainerRef.current) return;
 
+        const container = waveContainerRef.current;
         wavesurferRef.current?.destroy();
         regionRef.current = null;
         setIsLoaded(false);
+        setLoadFailed(false);
         setIsPlaying(false);
 
         const root = document.documentElement;
@@ -65,54 +51,65 @@ export function Trimmer() {
         const cssVarAlpha = (name: string, alpha: number) =>
             `hsl(${getComputedStyle(root).getPropertyValue(name).trim()} / ${alpha})`;
 
-        const regionsPlugin = RegionsPlugin.create();
+        let cancelled = false;
+        let ws: WaveSurfer | null = null;
 
-        const ws = WaveSurfer.create({
-            container: waveContainerRef.current,
-            waveColor: cssVar("--primary"),
-            progressColor: cssVarAlpha("--primary", 0.5),
-            cursorColor: cssVar("--foreground"),
-            height: 96,
-            normalize: true,
-            plugins: [regionsPlugin],
-        });
+        window.electronAPI
+            .getMediaPeaks(filePath)
+            .then(({ peaks, duration: peaksDuration }) => {
+                if (cancelled) return;
 
-        wavesurferRef.current = ws;
+                const regionsPlugin = RegionsPlugin.create();
 
-        ws.on("ready", (dur) => {
-            setDuration(dur);
-            setTrimStart(0);
-            setTrimEnd(dur);
-            setIsLoaded(true);
+                ws = WaveSurfer.create({
+                    container,
+                    waveColor: cssVar("--primary"),
+                    progressColor: cssVarAlpha("--primary", 0.5),
+                    cursorColor: cssVar("--foreground"),
+                    height: 96,
+                    normalize: true,
+                    url: mediaUrl(filePath),
+                    peaks: [peaks.length > 0 ? peaks : new Float32Array(1)],
+                    duration: peaksDuration > 0 ? peaksDuration : undefined,
+                    plugins: [regionsPlugin],
+                });
 
-            const region = regionsPlugin.addRegion({
-                start: 0,
-                end: dur,
-                color: cssVarAlpha("--primary", 0.2),
-                drag: true,
-                resize: true,
+                wavesurferRef.current = ws;
+
+                ws.on("ready", (dur) => {
+                    setDuration(dur);
+                    setTrimStart(0);
+                    setTrimEnd(dur);
+                    setIsLoaded(true);
+
+                    const region = regionsPlugin.addRegion({
+                        start: 0,
+                        end: dur,
+                        color: cssVarAlpha("--primary", 0.2),
+                        drag: true,
+                        resize: true,
+                    });
+                    regionRef.current = region;
+
+                    region.on("update-end", () => {
+                        updatingFromRegionRef.current = true;
+                        setTrimStart(region.start);
+                        setTrimEnd(region.end);
+                        updatingFromRegionRef.current = false;
+                    });
+                });
+
+                ws.on("play", () => setIsPlaying(true));
+                ws.on("pause", () => setIsPlaying(false));
+                ws.on("finish", () => setIsPlaying(false));
+            })
+            .catch(() => {
+                if (!cancelled) setLoadFailed(true);
             });
-            regionRef.current = region;
-
-            region.on("update-end", () => {
-                updatingFromRegionRef.current = true;
-                setTrimStart(region.start);
-                setTrimEnd(region.end);
-                updatingFromRegionRef.current = false;
-            });
-        });
-
-        ws.on("play", () => setIsPlaying(true));
-        ws.on("pause", () => setIsPlaying(false));
-        ws.on("finish", () => setIsPlaying(false));
-
-        window.electronAPI.readFile(filePath).then((buffer) => {
-            const blob = new Blob([new Uint8Array(buffer)]);
-            ws.loadBlob(blob);
-        });
 
         return () => {
-            ws.destroy();
+            cancelled = true;
+            ws?.destroy();
         };
     }, [filePath]);
 
@@ -244,6 +241,16 @@ export function Trimmer() {
                         {isLoaded && (
                             <span className="text-xs text-muted-foreground">
                                 {t("trimmer.totalDuration")}: {duration.toFixed(2)}s
+                            </span>
+                        )}
+                        {!isLoaded && !loadFailed && (
+                            <span className="text-xs text-muted-foreground">
+                                {t("trimmer.loading")}
+                            </span>
+                        )}
+                        {loadFailed && (
+                            <span className="text-xs text-destructive">
+                                {t("trimmer.loadError")}
                             </span>
                         )}
                     </div>
