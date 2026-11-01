@@ -30,6 +30,7 @@ export function Trimmer() {
         currentTime,
         hasVideo,
         playbackUnavailable,
+        isVideoReady,
         playPause,
         skip,
     } = useTrimmerPlayer({
@@ -103,9 +104,17 @@ export function Trimmer() {
                         </Button>
                     </div>
 
-                    <VideoPreview ref={videoRef} isHidden={!hasVideo || playbackUnavailable} />
+                    <VideoPreview
+                        ref={videoRef}
+                        isHidden={!hasVideo || playbackUnavailable}
+                        isLoading={!isVideoReady}
+                    />
 
-                    <Waveform ref={waveContainerRef} isLoaded={isLoaded} />
+                    <Waveform
+                        ref={waveContainerRef}
+                        isLoaded={isLoaded}
+                        isLoading={!isLoaded && !loadFailed}
+                    />
 
                     <PlaybackControls
                         isPlaying={isPlaying}

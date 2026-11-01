@@ -36,6 +36,7 @@ export function useTrimmerPlayer({
     const [currentTime, setCurrentTime] = useState(0);
     const [hasVideo, setHasVideo] = useState(false);
     const [playbackUnavailable, setPlaybackUnavailable] = useState(false);
+    const [isVideoReady, setIsVideoReady] = useState(false);
 
     // Reset per-file state when the file changes (https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes)
     const [prevFilePath, setPrevFilePath] = useState(filePath);
@@ -48,6 +49,7 @@ export function useTrimmerPlayer({
         setCurrentTime(0);
         setHasVideo(false);
         setPlaybackUnavailable(false);
+        setIsVideoReady(false);
     }
 
     const wavesurferRef = useRef<WaveSurfer | null>(null);
@@ -71,9 +73,14 @@ export function useTrimmerPlayer({
         wavesurferRef.current?.destroy();
 
         const handleLoadedMetadata = () => setHasVideo(video.videoWidth > 0);
+        const handleLoadedData = () => setIsVideoReady(true);
         const handleVideoError = () => setPlaybackUnavailable(true);
         video.addEventListener("loadedmetadata", handleLoadedMetadata);
+        video.addEventListener("loadeddata", handleLoadedData);
         video.addEventListener("error", handleVideoError);
+
+        // Start loading the media now, in parallel with the peaks. WaveSurfer later adopts this src
+        video.src = mediaUrl(filePath);
 
         const root = document.documentElement;
         const cssVar = (name: string) =>
@@ -99,7 +106,6 @@ export function useTrimmerPlayer({
                     height: 96,
                     normalize: true,
                     media: video,
-                    url: mediaUrl(filePath),
                     peaks: [peaks.length > 0 ? peaks : new Float32Array(1)],
                     duration: peaksDuration > 0 ? peaksDuration : undefined,
                     plugins: [regionsPlugin],
@@ -157,6 +163,7 @@ export function useTrimmerPlayer({
             ws?.destroy();
             if (wavesurferRef.current === ws) wavesurferRef.current = null;
             video.removeEventListener("loadedmetadata", handleLoadedMetadata);
+            video.removeEventListener("loadeddata", handleLoadedData);
             video.removeEventListener("error", handleVideoError);
             video.pause();
             video.removeAttribute("src");
@@ -209,6 +216,7 @@ export function useTrimmerPlayer({
         currentTime,
         hasVideo,
         playbackUnavailable,
+        isVideoReady,
         playPause,
         skip,
     };
