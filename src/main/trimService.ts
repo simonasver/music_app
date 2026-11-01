@@ -1,13 +1,7 @@
 import { spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import { app } from "electron";
-
-function toolsDir(): string {
-    return app.isPackaged
-        ? path.join(process.resourcesPath, "tools")
-        : path.join(process.cwd(), "resources", "tools");
-}
+import { ffmpegPath } from "./tools";
 
 export interface TrimParams {
     inputPath: string;
@@ -47,8 +41,6 @@ export function executeTrim(params: TrimParams): Promise<TrimResult> {
             ? path.join(dir, base + "_trimming_temp" + ext)
             : finalOutputPath;
 
-        const ffmpegPath = path.join(toolsDir(), "ffmpeg.exe");
-
         const args = [
             "-y",
             "-i",
@@ -62,7 +54,7 @@ export function executeTrim(params: TrimParams): Promise<TrimResult> {
             tempOutputPath,
         ];
 
-        const proc = spawn(ffmpegPath, args, { windowsHide: true });
+        const proc = spawn(ffmpegPath(), args, { windowsHide: true });
 
         const stderrLines: string[] = [];
         proc.stderr?.on("data", (data: Buffer) => {

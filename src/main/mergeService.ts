@@ -1,13 +1,8 @@
 import { spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import { app } from "electron";
-
-function toolsDir(): string {
-    return app.isPackaged
-        ? path.join(process.resourcesPath, "tools")
-        : path.join(process.cwd(), "resources", "tools");
-}
+import { AUDIO_EXTENSIONS } from "../shared/media";
+import { ffmpegPath } from "./tools";
 
 export interface MergeParams {
     inputPaths: string[];
@@ -18,12 +13,10 @@ export interface MergeResult {
     outputPath: string;
 }
 
-const AUDIO_EXTENSIONS = new Set(["mp3", "wav", "ogg", "flac", "m4a", "aac", "opus", "wma"]);
-
 function buildArgs(inputPaths: string[], outputPath: string): string[] {
     const n = inputPaths.length;
     const ext = path.extname(outputPath).replace(".", "").toLowerCase();
-    const isAudio = AUDIO_EXTENSIONS.has(ext);
+    const isAudio = AUDIO_EXTENSIONS.includes(ext);
 
     const inputArgs = inputPaths.flatMap((p) => ["-i", p]);
 
@@ -59,9 +52,8 @@ export function executeMerge(params: MergeParams): Promise<MergeResult> {
             return reject(new Error("Output path is required"));
         }
 
-        const ffmpegPath = path.join(toolsDir(), "ffmpeg.exe");
         const args = buildArgs(inputPaths, outputPath);
-        const proc = spawn(ffmpegPath, args, { windowsHide: true });
+        const proc = spawn(ffmpegPath(), args, { windowsHide: true });
 
         const stderrLines: string[] = [];
         proc.stderr?.on("data", (data: Buffer) => {

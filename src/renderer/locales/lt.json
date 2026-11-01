@@ -82,7 +82,9 @@
         "save": "Išsaugoti",
         "trimming": "Apkarpoma\u2026",
         "trimComplete": "Išsaugota į {{path}}",
-        "trimError": "Apkarpyti nepavyko"
+        "trimError": "Apkarpyti nepavyko",
+        "loading": "Įkeliama garso banga…",
+        "loadError": "Nepavyko įkelti šio failo"
     },
     "merger": {
         "addFiles": "Pridėti failus",

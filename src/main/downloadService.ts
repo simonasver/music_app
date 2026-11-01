@@ -1,14 +1,8 @@
 import { exec, spawn, ChildProcess } from "node:child_process";
 import path from "node:path";
-import { app } from "electron";
+import { toolsDir, ytDlpPath } from "./tools";
 
 let activeProcess: ChildProcess | null = null;
-
-function toolsDir(): string {
-    return app.isPackaged
-        ? path.join(process.resourcesPath, "tools")
-        : path.join(process.cwd(), "resources", "tools");
-}
 
 /** Split a flags string into an args array, respecting quoted strings. */
 function parseFlags(flagsString: string): string[] {
@@ -52,7 +46,6 @@ export function startDownload(
     onExit: (code: number | null) => void,
 ): void {
     const dir = toolsDir();
-    const ytDlpPath = path.join(dir, "yt-dlp.exe");
     const flags = parseFlags(flagsString);
 
     const PROGRESS_FLAGS = [
@@ -71,7 +64,7 @@ export function startDownload(
         url,
     ];
 
-    activeProcess = spawn(ytDlpPath, args, {
+    activeProcess = spawn(ytDlpPath(), args, {
         env: { ...process.env, PATH: dir + ";" + process.env.PATH },
         windowsHide: true,
     });

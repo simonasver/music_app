@@ -82,7 +82,9 @@
         "save": "Save",
         "trimming": "Trimming\u2026",
         "trimComplete": "Saved to {{path}}",
-        "trimError": "Trim failed"
+        "trimError": "Trim failed",
+        "loading": "Loading waveform…",
+        "loadError": "Could not load this file"
     },
     "merger": {
         "addFiles": "Add Files",
