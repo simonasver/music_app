@@ -28,7 +28,10 @@ export function Trimmer() {
     const [replaceOriginal, setReplaceOriginal] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
     const [loadFailed, setLoadFailed] = useState(false);
+    const [hasVideo, setHasVideo] = useState(false);
+    const [playbackUnavailable, setPlaybackUnavailable] = useState(false);
 
+    const videoRef = useRef<HTMLVideoElement>(null);
     const waveContainerRef = useRef<HTMLDivElement>(null);
     const wavesurferRef = useRef<WaveSurfer | null>(null);
     const regionRef = useRef<Region | null>(null);
@@ -36,13 +39,16 @@ export function Trimmer() {
 
     // Initialize wavesurfer once the container div is in the DOM (after filePath state triggers re-render)
     useEffect(() => {
-        if (!filePath || !waveContainerRef.current) return;
+        if (!filePath || !waveContainerRef.current || !videoRef.current) return;
 
         const container = waveContainerRef.current;
+        const video = videoRef.current;
         wavesurferRef.current?.destroy();
         regionRef.current = null;
         setIsLoaded(false);
         setLoadFailed(false);
+        setHasVideo(false);
+        setPlaybackUnavailable(false);
         setIsPlaying(false);
 
         const root = document.documentElement;
@@ -68,6 +74,7 @@ export function Trimmer() {
                     cursorColor: cssVar("--foreground"),
                     height: 96,
                     normalize: true,
+                    media: video,
                     url: mediaUrl(filePath),
                     peaks: [peaks.length > 0 ? peaks : new Float32Array(1)],
                     duration: peaksDuration > 0 ? peaksDuration : undefined,
@@ -110,6 +117,9 @@ export function Trimmer() {
         return () => {
             cancelled = true;
             ws?.destroy();
+            video.pause();
+            video.removeAttribute("src");
+            video.load();
         };
     }, [filePath]);
 
@@ -219,6 +229,17 @@ export function Trimmer() {
                         </Button>
                     </div>
 
+                    {/* Video preview */}
+                    <video
+                        ref={videoRef}
+                        className={cn(
+                            "w-full max-h-[40vh] rounded-md bg-black object-contain",
+                            (!hasVideo || playbackUnavailable) && "hidden",
+                        )}
+                        onLoadedMetadata={(e) => setHasVideo(e.currentTarget.videoWidth > 0)}
+                        onError={() => setPlaybackUnavailable(true)}
+                    />
+
                     {/* Waveform */}
                     <div
                         className={cn(
@@ -234,7 +255,7 @@ export function Trimmer() {
                             variant="outline"
                             size="sm"
                             onClick={() => wavesurferRef.current?.playPause()}
-                            disabled={!isLoaded || isTrimming}
+                            disabled={!isLoaded || isTrimming || playbackUnavailable}
                         >
                             {isPlaying ? t("trimmer.pause") : t("trimmer.play")}
                         </Button>
@@ -251,6 +272,11 @@ export function Trimmer() {
                         {loadFailed && (
                             <span className="text-xs text-destructive">
                                 {t("trimmer.loadError")}
+                            </span>
+                        )}
+                        {playbackUnavailable && (
+                            <span className="text-xs text-muted-foreground">
+                                {t("trimmer.playbackUnavailable")}
                             </span>
                         )}
                     </div>
