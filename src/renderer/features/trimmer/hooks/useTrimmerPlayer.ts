@@ -1,7 +1,7 @@
-import { type RefObject, useEffect, useRef, useState } from "react";
-import WaveSurfer from "wavesurfer.js";
+import { type RefObject, useEffect, useRef } from "react";
+import type WaveSurfer from "wavesurfer.js";
 import RegionsPlugin, { type Region } from "wavesurfer.js/dist/plugins/regions.esm.js";
-import { mediaUrl } from "@shared/media";
+import { cssVarAlpha, useWaveformPlayer } from "@/hooks/useWaveformPlayer";
 
 /** Playhead within this distance of the region end counts as "at the end" */
 const END_TOLERANCE = 0.05;
@@ -29,147 +29,69 @@ export function useTrimmerPlayer({
     onReady,
     onRegionChange,
 }: TrimmerPlayerOptions) {
-    const [isLoaded, setIsLoaded] = useState(false);
-    const [loadFailed, setLoadFailed] = useState(false);
-    const [duration, setDuration] = useState(0);
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [currentTime, setCurrentTime] = useState(0);
-    const [hasVideo, setHasVideo] = useState(false);
-    const [playbackUnavailable, setPlaybackUnavailable] = useState(false);
-    const [isVideoReady, setIsVideoReady] = useState(false);
-
-    // Reset per-file state when the file changes (https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes)
-    const [prevFilePath, setPrevFilePath] = useState(filePath);
-    if (filePath !== prevFilePath) {
-        setPrevFilePath(filePath);
-        setIsLoaded(false);
-        setLoadFailed(false);
-        setDuration(0);
-        setIsPlaying(false);
-        setCurrentTime(0);
-        setHasVideo(false);
-        setPlaybackUnavailable(false);
-        setIsVideoReady(false);
-    }
-
-    const wavesurferRef = useRef<WaveSurfer | null>(null);
+    const regionsPluginRef = useRef<ReturnType<typeof RegionsPlugin.create> | null>(null);
     const regionRef = useRef<Region | null>(null);
     const updatingFromRegionRef = useRef(false);
     const trimRangeRef = useRef({ start: 0, end: 0 });
     const callbacksRef = useRef({ onReady, onRegionChange });
 
-    // The WaveSurfer effect runs once per file, so it reads the latest callbacks through a ref
+    // The WaveSurfer handlers are registered once per file, so they read the latest callbacks through a ref
     useEffect(() => {
         callbacksRef.current = { onReady, onRegionChange };
     });
 
-    // Initialize wavesurfer once the container div is in the DOM (after filePath state triggers re-render)
-    useEffect(() => {
-        regionRef.current = null;
-        if (!filePath || !containerRef.current || !videoRef.current) return;
+    const { wavesurferRef, ...player } = useWaveformPlayer({
+        filePath,
+        videoRef,
+        containerRef,
+        height: 96,
+        createPlugins: () => {
+            regionsPluginRef.current = RegionsPlugin.create();
+            return [regionsPluginRef.current];
+        },
+        onCreate: (instance: WaveSurfer) => {
+            const regionsPlugin = regionsPluginRef.current;
+            if (!regionsPlugin) return;
 
-        const container = containerRef.current;
-        const video = videoRef.current;
-        wavesurferRef.current?.destroy();
+            instance.on("ready", (dur) => {
+                callbacksRef.current.onReady(dur);
 
-        const handleLoadedMetadata = () => setHasVideo(video.videoWidth > 0);
-        const handleLoadedData = () => setIsVideoReady(true);
-        const handleVideoError = () => setPlaybackUnavailable(true);
-        video.addEventListener("loadedmetadata", handleLoadedMetadata);
-        video.addEventListener("loadeddata", handleLoadedData);
-        video.addEventListener("error", handleVideoError);
-
-        // Start loading the media now, in parallel with the peaks. WaveSurfer later adopts this src
-        video.src = mediaUrl(filePath);
-
-        const root = document.documentElement;
-        const cssVar = (name: string) =>
-            `hsl(${getComputedStyle(root).getPropertyValue(name).trim()})`;
-        const cssVarAlpha = (name: string, alpha: number) =>
-            `hsl(${getComputedStyle(root).getPropertyValue(name).trim()} / ${alpha})`;
-
-        let cancelled = false;
-        let ws: WaveSurfer | null = null;
-
-        window.electronAPI
-            .getMediaPeaks(filePath)
-            .then(({ peaks, duration: peaksDuration }) => {
-                if (cancelled) return;
-
-                const regionsPlugin = RegionsPlugin.create();
-
-                const instance = WaveSurfer.create({
-                    container,
-                    waveColor: cssVar("--primary"),
-                    progressColor: cssVarAlpha("--primary", 0.5),
-                    cursorColor: cssVar("--foreground"),
-                    height: 96,
-                    normalize: true,
-                    media: video,
-                    peaks: [peaks.length > 0 ? peaks : new Float32Array(1)],
-                    duration: peaksDuration > 0 ? peaksDuration : undefined,
-                    plugins: [regionsPlugin],
+                const region = regionsPlugin.addRegion({
+                    start: 0,
+                    end: dur,
+                    color: cssVarAlpha("--primary", 0.2),
+                    drag: true,
+                    resize: true,
                 });
+                regionRef.current = region;
 
-                ws = instance;
-                wavesurferRef.current = ws;
-
-                ws.on("ready", (dur) => {
-                    setDuration(dur);
-                    callbacksRef.current.onReady(dur);
-                    setIsLoaded(true);
-
-                    const region = regionsPlugin.addRegion({
-                        start: 0,
-                        end: dur,
-                        color: cssVarAlpha("--primary", 0.2),
-                        drag: true,
-                        resize: true,
-                    });
-                    regionRef.current = region;
-
-                    region.on("update-end", () => {
-                        updatingFromRegionRef.current = true;
-                        callbacksRef.current.onRegionChange(region.start, region.end);
-                        updatingFromRegionRef.current = false;
-                    });
+                region.on("update-end", () => {
+                    updatingFromRegionRef.current = true;
+                    callbacksRef.current.onRegionChange(region.start, region.end);
+                    updatingFromRegionRef.current = false;
                 });
-
-                ws.on("play", () => setIsPlaying(true));
-                ws.on("pause", () => setIsPlaying(false));
-                ws.on("finish", () => setIsPlaying(false));
-
-                ws.on("timeupdate", (time) => {
-                    setCurrentTime(time);
-                    const { end } = trimRangeRef.current;
-                    if (instance.isPlaying() && time >= end) {
-                        instance.pause();
-                        instance.setTime(end);
-                    }
-                });
-
-                ws.on("interaction", (time) => {
-                    const { start, end } = trimRangeRef.current;
-                    const clamped = clamp(time, start, end);
-                    if (clamped !== time) instance.setTime(clamped);
-                });
-            })
-            .catch(() => {
-                if (!cancelled) setLoadFailed(true);
             });
 
-        return () => {
-            cancelled = true;
-            ws?.destroy();
-            if (wavesurferRef.current === ws) wavesurferRef.current = null;
-            video.removeEventListener("loadedmetadata", handleLoadedMetadata);
-            video.removeEventListener("loadeddata", handleLoadedData);
-            video.removeEventListener("error", handleVideoError);
-            video.pause();
-            video.removeAttribute("src");
-            video.load();
-        };
-    }, [filePath, containerRef, videoRef]);
+            instance.on("timeupdate", (time) => {
+                const { end } = trimRangeRef.current;
+                if (instance.isPlaying() && time >= end) {
+                    instance.pause();
+                    instance.setTime(end);
+                }
+            });
+
+            instance.on("interaction", (time) => {
+                const { start, end } = trimRangeRef.current;
+                const clamped = clamp(time, start, end);
+                if (clamped !== time) instance.setTime(clamped);
+            });
+        },
+    });
+
+    // The old region is destroyed with its WaveSurfer instance
+    useEffect(() => {
+        regionRef.current = null;
+    }, [filePath]);
 
     // Sync number inputs → region handles
     useEffect(() => {
@@ -188,7 +110,7 @@ export function useTrimmerPlayer({
         const time = ws.getCurrentTime();
         const clamped = clamp(time, trimStart, trimEnd);
         if (clamped !== time) ws.setTime(clamped);
-    }, [trimStart, trimEnd]);
+    }, [trimStart, trimEnd, wavesurferRef]);
 
     function playPause() {
         const ws = wavesurferRef.current;
@@ -208,16 +130,5 @@ export function useTrimmerPlayer({
         ws.setTime(clamp(ws.getCurrentTime() + delta, trimStart, trimEnd));
     }
 
-    return {
-        isLoaded,
-        loadFailed,
-        duration,
-        isPlaying,
-        currentTime,
-        hasVideo,
-        playbackUnavailable,
-        isVideoReady,
-        playPause,
-        skip,
-    };
+    return { ...player, playPause, skip };
 }
