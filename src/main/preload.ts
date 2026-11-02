@@ -53,8 +53,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
         replaceOriginal: boolean;
     }): Promise<{ outputPath: string }> => ipcRenderer.invoke("trim:execute", params),
 
-    readFile: (filePath: string): Promise<Buffer> => ipcRenderer.invoke("file:read", filePath),
-
     getMediaPeaks: (filePath: string): Promise<{ peaks: Float32Array; duration: number }> =>
         ipcRenderer.invoke("media:peaks", filePath),
 

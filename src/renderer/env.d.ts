@@ -42,7 +42,6 @@ declare global {
                 end: number;
                 replaceOriginal: boolean;
             }): Promise<{ outputPath: string }>;
-            readFile(filePath: string): Promise<Buffer>;
             getMediaPeaks(filePath: string): Promise<{ peaks: Float32Array; duration: number }>;
             selectMediaFiles(): Promise<string[]>;
             executeMerge(params: {

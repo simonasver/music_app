@@ -192,8 +192,6 @@ function registerIpcHandlers() {
         return result.canceled ? null : result.filePath;
     });
 
-    ipcMain.handle("file:read", (_event, filePath: string) => fs.readFileSync(filePath));
-
     ipcMain.handle("media:peaks", (_event, filePath: string) =>
         mediaService.computePeaks(filePath),
     );
