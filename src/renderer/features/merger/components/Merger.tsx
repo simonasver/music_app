@@ -12,28 +12,12 @@ import { SortableContext, arrayMove, verticalListSortingStrategy } from "@dnd-ki
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { isMediaFileName } from "@shared/media";
 import { MergeTrack } from "./MergeTrack";
-
-const MEDIA_EXTENSIONS = new Set([
-    "mp3",
-    "mp4",
-    "wav",
-    "ogg",
-    "flac",
-    "m4a",
-    "aac",
-    "opus",
-    "wma",
-    "webm",
-    "mkv",
-    "avi",
-    "mov",
-    "m4v",
-]);
 
 function getMediaPaths(files: FileList): string[] {
     return Array.from(files)
-        .filter((f) => MEDIA_EXTENSIONS.has(f.name.split(".").pop()?.toLowerCase() ?? ""))
+        .filter((f) => isMediaFileName(f.name))
         .map((f) => window.electronAPI.getPathForFile(f));
 }
 
