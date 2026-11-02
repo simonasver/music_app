@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
     DndContext,
@@ -35,6 +35,22 @@ export function Merger() {
     const [isDragOver, setIsDragOver] = useState(false);
 
     const sensors = useSensors(useSensor(PointerSensor));
+    const trackListRef = useRef<HTMLDivElement>(null);
+    const hasTracks = tracks.length > 0;
+
+    // Only one track plays at a time. Media events don't bubble, so listen in the capture phase
+    useEffect(() => {
+        const container = trackListRef.current;
+        if (!container) return;
+
+        const handlePlay = (e: Event) => {
+            container.querySelectorAll("video").forEach((video) => {
+                if (video !== e.target && !video.paused) video.pause();
+            });
+        };
+        container.addEventListener("play", handlePlay, true);
+        return () => container.removeEventListener("play", handlePlay, true);
+    }, [hasTracks]);
 
     async function handleAddFiles() {
         const paths = await window.electronAPI.selectMediaFiles();
@@ -133,7 +149,7 @@ export function Merger() {
             )}
 
             {/* Track list */}
-            <div className="flex-1 overflow-auto flex flex-col gap-2">
+            <div ref={trackListRef} className="flex-1 overflow-auto flex flex-col gap-2">
                 <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}
