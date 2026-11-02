@@ -1,81 +1,65 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import WaveSurfer from "wavesurfer.js";
+import { Pause, Play } from "lucide-react";
+import { StepButtons } from "@/components/media/StepButtons";
+import { VideoPreview } from "@/components/media/VideoPreview";
+import { Waveform } from "@/components/media/Waveform";
 import { Button } from "@/components/ui/button";
+import { useWaveformPlayer } from "@/hooks/useWaveformPlayer";
+import { SKIP_STEPS } from "@/lib/steps";
+import { formatTime } from "@/lib/time";
 import { cn } from "@/lib/utils";
-import { useTranslation } from "react-i18next";
 
 interface MergeTrackProps {
     id: string;
     path: string;
+    disabled: boolean;
     onRemove: (id: string) => void;
 }
 
-export function MergeTrack({ id, path, onRemove }: MergeTrackProps) {
+export function MergeTrack({ id, path, disabled, onRemove }: MergeTrackProps) {
     const { t } = useTranslation();
 
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
         id,
     });
 
-    const [duration, setDuration] = useState(0);
-    const [isLoaded, setIsLoaded] = useState(false);
-    const [isPlaying, setIsPlaying] = useState(false);
-
+    const videoRef = useRef<HTMLVideoElement>(null);
     const waveContainerRef = useRef<HTMLDivElement>(null);
-    const wavesurferRef = useRef<WaveSurfer | null>(null);
+
+    const {
+        wavesurferRef,
+        isLoaded,
+        loadFailed,
+        duration,
+        isPlaying,
+        currentTime,
+        hasVideo,
+        playbackUnavailable,
+        isVideoReady,
+    } = useWaveformPlayer({
+        filePath: path,
+        videoRef,
+        containerRef: waveContainerRef,
+        height: 64,
+    });
 
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
     };
 
-    useEffect(() => {
-        if (!waveContainerRef.current) return;
-
-        wavesurferRef.current?.destroy();
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setIsLoaded(false);
-        setIsPlaying(false);
-
-        const root = document.documentElement;
-        const cssVar = (name: string) =>
-            `hsl(${getComputedStyle(root).getPropertyValue(name).trim()})`;
-        const cssVarAlpha = (name: string, alpha: number) =>
-            `hsl(${getComputedStyle(root).getPropertyValue(name).trim()} / ${alpha})`;
-
-        const ws = WaveSurfer.create({
-            container: waveContainerRef.current,
-            waveColor: cssVar("--primary"),
-            progressColor: cssVarAlpha("--primary", 0.5),
-            cursorColor: cssVar("--foreground"),
-            height: 64,
-            normalize: true,
-        });
-
-        wavesurferRef.current = ws;
-
-        ws.on("ready", (dur) => {
-            setIsLoaded(true);
-            setDuration(dur);
-        });
-
-        ws.on("play", () => setIsPlaying(true));
-        ws.on("pause", () => setIsPlaying(false));
-        ws.on("finish", () => setIsPlaying(false));
-
-        window.electronAPI.readFile(path).then((buffer) => {
-            const blob = new Blob([new Uint8Array(buffer)]);
-            ws.loadBlob(blob);
-        });
-
-        return () => {
-            ws.destroy();
-        };
-    }, [path]);
+    function skip(delta: number) {
+        const ws = wavesurferRef.current;
+        if (!ws) return;
+        ws.setTime(Math.min(Math.max(ws.getCurrentTime() + delta, 0), duration));
+    }
 
     const fileName = path.split(/[\\/]/).pop() ?? path;
+    const controlsDisabled = !isLoaded || playbackUnavailable || disabled;
+    const playLabel = isPlaying ? t("merger.pause") : t("merger.play");
 
     return (
         <div
@@ -109,31 +93,61 @@ export function MergeTrack({ id, path, onRemove }: MergeTrackProps) {
                 </svg>
             </button>
 
+            <VideoPreview
+                ref={videoRef}
+                isHidden={!hasVideo || playbackUnavailable}
+                isLoading={!isVideoReady}
+                className="w-40 shrink-0"
+                videoClassName="aspect-video max-h-24"
+            />
+
             {/* File content */}
             <div className="flex flex-col gap-2 flex-1 min-w-0">
                 <span className="text-sm font-mono truncate text-muted-foreground">{fileName}</span>
-                <div
+
+                <Waveform
                     ref={waveContainerRef}
-                    className={cn(
-                        "transition-opacity",
-                        !isLoaded && "opacity-40 pointer-events-none",
-                    )}
+                    isLoaded={isLoaded}
+                    isLoading={!isLoaded && !loadFailed}
+                    className="min-h-[88px]"
                 />
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                    <StepButtons
+                        steps={SKIP_STEPS}
+                        direction="decrease"
+                        onStep={skip}
+                        disabled={controlsDisabled}
+                    />
                     <Button
                         variant="outline"
                         size="sm"
+                        className="w-12"
                         onClick={() => wavesurferRef.current?.playPause()}
-                        disabled={!isLoaded}
+                        disabled={controlsDisabled}
+                        aria-label={playLabel}
+                        title={playLabel}
                     >
-                        {isPlaying ? t("merger.pause") : t("merger.play")}
+                        {isPlaying ? <Pause /> : <Play />}
                     </Button>
-                    {isLoaded && (
-                        <span className="text-xs text-muted-foreground">
-                            {t("merger.totalDuration")}: {duration.toFixed(2)}s
-                        </span>
-                    )}
+                    <StepButtons
+                        steps={SKIP_STEPS}
+                        direction="increase"
+                        onStep={skip}
+                        disabled={controlsDisabled}
+                    />
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 ml-2 text-xs text-muted-foreground">
+                        {isLoaded && (
+                            <span className="tabular-nums text-foreground">
+                                {formatTime(currentTime)} / {formatTime(duration)}
+                            </span>
+                        )}
+                        {!isLoaded && !loadFailed && <span>{t("merger.loading")}</span>}
+                        {loadFailed && (
+                            <span className="text-destructive">{t("merger.loadError")}</span>
+                        )}
+                        {playbackUnavailable && <span>{t("merger.playbackUnavailable")}</span>}
+                    </div>
                 </div>
             </div>
 

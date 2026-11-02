@@ -148,6 +148,7 @@ export function Merger() {
                                 key={track.id}
                                 id={track.id}
                                 path={track.path}
+                                disabled={isMerging}
                                 onRemove={handleRemove}
                             />
                         ))}

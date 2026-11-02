@@ -98,7 +98,9 @@
         "minFilesHint": "Pridėkite bent 2 failus sujungimui",
         "play": "Groti",
         "pause": "Pristabdyti",
-        "totalDuration": "Viso"
+        "loading": "Įkeliama garso banga…",
+        "loadError": "Nepavyko įkelti šio failo",
+        "playbackUnavailable": "Šio formato atkurti negalima. Vis tiek galite jį sujungti."
     },
     "common": {
         "areYouSure": "Ar tikrai?",

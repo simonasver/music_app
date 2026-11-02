@@ -98,7 +98,9 @@
         "minFilesHint": "Add at least 2 files to merge",
         "play": "Play",
         "pause": "Pause",
-        "totalDuration": "Total"
+        "loading": "Loading waveform…",
+        "loadError": "Could not load this file",
+        "playbackUnavailable": "Playback isn't supported for this format. It can still be merged."
     },
     "common": {
         "areYouSure": "Are you sure?",
