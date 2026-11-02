@@ -70,7 +70,7 @@ const createWindow = () => {
             ? path.join(process.resourcesPath, "icon.ico")
             : path.join(__dirname, "../../assets/icon.ico"),
         webPreferences: {
-            preload: path.join(__dirname, "preload.js"),
+            preload: path.join(__dirname, "preload.cjs"),
         },
     });
 
