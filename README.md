@@ -4,43 +4,43 @@ A Windows desktop application for downloading, trimming, and merging audio/video
 
 ## Features
 
--   **YouTube Downloader** — download audio (MP3) or video (MP4) from YouTube URLs using yt-dlp, with real-time progress tracking and download history
--   **Trimmer** — trim audio/video files to a specific time range using ffmpeg
--   **Merger** — merge multiple audio/video files into one using ffmpeg
--   **Settings** — configure download output folder, yt-dlp flags for MP3/MP4, UI theme (light/dark/system), and language (English/Lithuanian)
+- **YouTube Downloader** — download audio (MP3) or video (MP4) from YouTube URLs using yt-dlp, with real-time progress tracking and download history
+- **Trimmer** — trim audio/video files to a specific time range using ffmpeg
+- **Merger** — merge multiple audio/video files into one using ffmpeg
+- **Settings** — configure download output folder, yt-dlp flags for MP3/MP4, UI theme (light/dark/system), and language (English/Lithuanian)
 
 > **Windows only.** Bundled `yt-dlp.exe` and `ffmpeg.exe` executables are Windows binaries — macOS and Linux are not supported.
 
 ## Tech Stack
 
--   **[Electron](https://www.electronjs.org/)** — desktop runtime
--   **[React 19](https://react.dev/)** — UI framework
--   **[TypeScript](https://www.typescriptlang.org/)** — type-safe JavaScript
--   **[Vite](https://vitejs.dev/)** — bundler and dev server (via electron-forge plugin)
--   **[Electron Forge](https://www.electronforge.io/)** — build, package, and publish toolchain
--   **[Tailwind CSS v4](https://tailwindcss.com/)** — utility-first CSS framework (via PostCSS)
--   **[shadcn/ui](https://ui.shadcn.com/)** — component library built on Radix UI
--   **[i18next](https://www.i18next.com/)** — internationalization (English, Lithuanian)
--   **[yt-dlp](https://github.com/yt-dlp/yt-dlp)** — YouTube downloader (bundled Windows binary)
--   **[ffmpeg](https://ffmpeg.org/)** — audio/video processing (bundled Windows binary)
--   **[ESLint](https://eslint.org/)** + **[Prettier](https://prettier.io/)** — linting and formatting
+- **[Electron](https://www.electronjs.org/)** — desktop runtime
+- **[React 19](https://react.dev/)** — UI framework
+- **[TypeScript](https://www.typescriptlang.org/)** — type-safe JavaScript
+- **[Vite](https://vitejs.dev/)** — bundler and dev server (via electron-forge plugin)
+- **[Electron Forge](https://www.electronforge.io/)** — build, package, and publish toolchain
+- **[Tailwind CSS v4](https://tailwindcss.com/)** — utility-first CSS framework (via PostCSS)
+- **[shadcn/ui](https://ui.shadcn.com/)** — component library built on Radix UI
+- **[i18next](https://www.i18next.com/)** — internationalization (English, Lithuanian)
+- **[yt-dlp](https://github.com/yt-dlp/yt-dlp)** — YouTube downloader (bundled Windows binary)
+- **[ffmpeg](https://ffmpeg.org/)** — audio/video processing (bundled Windows binary)
+- **[ESLint](https://eslint.org/)** + **[Prettier](https://prettier.io/)** — linting and formatting
 
 ## Prerequisites
 
--   [Node.js](https://nodejs.org/) v22.13+
--   npm v10+
--   Windows
+- [Node.js](https://nodejs.org/) v22.13+
+- npm v10+
+- Windows
 
 ### Dependency install scripts
 
 npm 12+ blocks dependency install scripts unless they are approved in the `allowScripts` field of `package.json`. The approved entries are:
 
--   `electron-winstaller`: its install script selects the 7-Zip binary that the Squirrel installer needs. The approval is pinned to the reviewed version (e.g. `electron-winstaller@5.4.0`).
+- `electron-winstaller`: its install script selects the 7-Zip binary that the Squirrel installer needs. The approval is pinned to the reviewed version (e.g. `electron-winstaller@5.4.0`).
 
 When a dependency update brings a new `electron-winstaller` version, the pinned approval no longer matches and its script is skipped:
 
--   `npm install` / `npm ci` ends with `install scripts blocked ... electron-winstaller@x.y.z`
--   `npm run make` / `npm run publish` then fails in Squirrel with `System.ComponentModel.Win32Exception: The system cannot find the file specified`
+- `npm install` / `npm ci` ends with `install scripts blocked ... electron-winstaller@x.y.z`
+- `npm run make` / `npm run publish` then fails in Squirrel with `System.ComponentModel.Win32Exception: The system cannot find the file specified`
 
 To fix it, review and approve the new version, commit `package.json`, and reinstall:
 
@@ -196,3 +196,4 @@ src/
 6. Add semi-automatic split by chapters. Automatically load and display splits, additionally showing each item in a list, with changeable start, name (which will be saved to)
 7. Normalize download information width so that time left would not jump around when speed changes.
 8. Convert displayed date into the correct format for user in download history.
+9. Update "merge" to work with different file types and different resolutions.
