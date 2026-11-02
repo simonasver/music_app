@@ -194,3 +194,5 @@ src/
 4. Make enabled download buttons more visible and different from the disabled ones. Cyan is too bright.
 5. Add thumbnail modification - add, change, remove
 6. Add semi-automatic split by chapters. Automatically load and display splits, additionally showing each item in a list, with changeable start, name (which will be saved to)
+7. Normalize download information width so that time left would not jump around when speed changes.
+8. Convert displayed date into the correct format for user in download history.
