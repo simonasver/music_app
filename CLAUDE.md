@@ -15,14 +15,14 @@ Features:
 
 | Layer          | Tech                                           |
 | -------------- | ---------------------------------------------- |
-| Runtime        | Electron 41                                    |
+| Runtime        | Electron 45                                    |
 | UI             | React 19, TypeScript 6, Tailwind CSS 4         |
 | Components     | shadcn/ui (Radix UI primitives)                |
-| Bundler        | Vite 5 via electron-forge                      |
+| Bundler        | Vite 8 via electron-forge                      |
 | i18n           | i18next + react-i18next (EN, LT)               |
-| Waveform       | WaveSurfer.js 7                                |
+| Waveform       | WaveSurfer.js 8                                |
 | Drag-drop      | dnd-kit                                        |
-| Packaging      | Electron Forge 7, Squirrel installer (Windows) |
+| Packaging      | Electron Forge 8, Squirrel installer (Windows) |
 | External tools | yt-dlp, ffmpeg (bundled binaries)              |
 
 ## Architecture
