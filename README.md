@@ -27,8 +27,8 @@ A Windows desktop application for downloading, trimming, and merging audio/video
 
 ## Prerequisites
 
--   [Node.js](https://nodejs.org/) v18+
--   npm v9+
+-   [Node.js](https://nodejs.org/) v22.13+
+-   npm v10+
 -   Windows
 
 ## Getting Started
