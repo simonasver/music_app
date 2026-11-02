@@ -2,18 +2,13 @@ import { app, BrowserWindow, ipcMain, dialog, shell, Menu, protocol } from "elec
 import fs from "node:fs";
 import path from "node:path";
 import started from "electron-squirrel-startup";
-import { loadSettings, saveSettings, getDefaults } from "./settingsService";
-import { startDownload, cancelDownload } from "./downloadService";
-import { executeTrim } from "./trimService";
-import { executeMerge } from "./mergeService";
-import { handleMediaRequest, computePeaks } from "./mediaService";
+import * as settingsService from "./settingsService";
+import * as downloadService from "./downloadService";
+import * as trimService from "./trimService";
+import * as mergeService from "./mergeService";
+import * as mediaService from "./mediaService";
 import { MEDIA_EXTENSIONS, MEDIA_SCHEME } from "../shared/media";
-import {
-    appendHistoryEntry,
-    getAllHistory,
-    deleteHistoryEntry,
-    deleteAllHistory,
-} from "./historyService";
+import * as historyService from "./historyService";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -119,7 +114,7 @@ const createWindow = () => {
 };
 
 app.on("ready", () => {
-    protocol.handle(MEDIA_SCHEME, handleMediaRequest);
+    protocol.handle(MEDIA_SCHEME, mediaService.handleMediaRequest);
     createWindow();
     registerIpcHandlers();
 });
@@ -137,12 +132,12 @@ app.on("activate", () => {
 });
 
 function registerIpcHandlers() {
-    ipcMain.handle("settings:get", () => loadSettings());
+    ipcMain.handle("settings:get", () => settingsService.loadSettings());
 
-    ipcMain.handle("settings:save", (_event, data) => saveSettings(data));
+    ipcMain.handle("settings:save", (_event, data) => settingsService.saveSettings(data));
 
     ipcMain.handle("download:start", (event, url: string, flags: string, outputDir: string) => {
-        startDownload(
+        downloadService.startDownload(
             url,
             flags,
             outputDir,
@@ -151,19 +146,21 @@ function registerIpcHandlers() {
         );
     });
 
-    ipcMain.on("download:cancel", () => cancelDownload());
+    ipcMain.on("download:cancel", () => downloadService.cancelDownload());
 
-    ipcMain.handle("settings:get-defaults", () => getDefaults());
+    ipcMain.handle("settings:get-defaults", () => settingsService.getDefaults());
 
     ipcMain.handle("dialog:select-folder", async () => {
         const result = await dialog.showOpenDialog({ properties: ["openDirectory"] });
         return result.canceled ? null : result.filePaths[0];
     });
 
-    ipcMain.handle("history:append", (_event, entry) => appendHistoryEntry(entry));
-    ipcMain.handle("history:get-all", () => getAllHistory());
-    ipcMain.handle("history:delete-entry", (_event, id: string) => deleteHistoryEntry(id));
-    ipcMain.handle("history:delete-all", () => deleteAllHistory());
+    ipcMain.handle("history:append", (_event, entry) => historyService.appendHistoryEntry(entry));
+    ipcMain.handle("history:get-all", () => historyService.getAllHistory());
+    ipcMain.handle("history:delete-entry", (_event, id: string) =>
+        historyService.deleteHistoryEntry(id),
+    );
+    ipcMain.handle("history:delete-all", () => historyService.deleteAllHistory());
     ipcMain.handle("shell:open-url", (_event, url: string) => shell.openExternal(url));
 
     ipcMain.handle("dialog:select-media-file", async (_event, { multi }: { multi: boolean }) => {
@@ -180,9 +177,9 @@ function registerIpcHandlers() {
         return multi ? result.filePaths : result.filePaths[0];
     });
 
-    ipcMain.handle("trim:execute", (_event, params) => executeTrim(params));
+    ipcMain.handle("trim:execute", (_event, params) => trimService.executeTrim(params));
 
-    ipcMain.handle("merge:execute", (_event, params) => executeMerge(params));
+    ipcMain.handle("merge:execute", (_event, params) => mergeService.executeMerge(params));
 
     ipcMain.handle("dialog:save-file", async () => {
         const result = await dialog.showSaveDialog({
@@ -197,5 +194,7 @@ function registerIpcHandlers() {
 
     ipcMain.handle("file:read", (_event, filePath: string) => fs.readFileSync(filePath));
 
-    ipcMain.handle("media:peaks", (_event, filePath: string) => computePeaks(filePath));
+    ipcMain.handle("media:peaks", (_event, filePath: string) =>
+        mediaService.computePeaks(filePath),
+    );
 }
