@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog, shell, Menu } from "electron";
+import { app, BrowserWindow, ipcMain, dialog, shell, Menu, protocol } from "electron";
 import fs from "node:fs";
 import path from "node:path";
 import started from "electron-squirrel-startup";
@@ -6,6 +6,8 @@ import { loadSettings, saveSettings, getDefaults } from "./settingsService";
 import { startDownload, cancelDownload } from "./downloadService";
 import { executeTrim } from "./trimService";
 import { executeMerge } from "./mergeService";
+import { handleMediaRequest, computePeaks } from "./mediaService";
+import { MEDIA_EXTENSIONS, MEDIA_SCHEME } from "../shared/media";
 import {
     appendHistoryEntry,
     getAllHistory,
@@ -17,6 +19,13 @@ import {
 if (started) {
     app.quit();
 }
+
+protocol.registerSchemesAsPrivileged([
+    {
+        scheme: MEDIA_SCHEME,
+        privileges: { standard: true, secure: true, stream: true, supportFetchAPI: true },
+    },
+]);
 
 interface WindowState {
     width: number;
@@ -110,6 +119,7 @@ const createWindow = () => {
 };
 
 app.on("ready", () => {
+    protocol.handle(MEDIA_SCHEME, handleMediaRequest);
     createWindow();
     registerIpcHandlers();
 });
@@ -162,22 +172,7 @@ function registerIpcHandlers() {
             filters: [
                 {
                     name: "Audio/Video",
-                    extensions: [
-                        "mp3",
-                        "mp4",
-                        "wav",
-                        "ogg",
-                        "flac",
-                        "m4a",
-                        "aac",
-                        "opus",
-                        "wma",
-                        "webm",
-                        "mkv",
-                        "avi",
-                        "mov",
-                        "m4v",
-                    ],
+                    extensions: MEDIA_EXTENSIONS,
                 },
             ],
         });
@@ -201,4 +196,6 @@ function registerIpcHandlers() {
     });
 
     ipcMain.handle("file:read", (_event, filePath: string) => fs.readFileSync(filePath));
+
+    ipcMain.handle("media:peaks", (_event, filePath: string) => computePeaks(filePath));
 }

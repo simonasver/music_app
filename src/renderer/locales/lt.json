@@ -72,8 +72,8 @@
         "selectFile": "Pasirinkti failą",
         "supportedFormats": "Palaikomi formatai: MP3, MP4, WAV, OGG, FLAC, M4A ir kt.",
         "changeFile": "Keisti failą",
-        "startSeconds": "Pradžia (s)",
-        "endSeconds": "Pabaiga (s)",
+        "startSeconds": "Pradžia",
+        "endSeconds": "Pabaiga",
         "totalDuration": "Viso",
         "selectionDuration": "Pasirinkta",
         "play": "Groti",
@@ -82,7 +82,10 @@
         "save": "Išsaugoti",
         "trimming": "Apkarpoma\u2026",
         "trimComplete": "Išsaugota į {{path}}",
-        "trimError": "Apkarpyti nepavyko"
+        "trimError": "Apkarpyti nepavyko",
+        "loading": "Įkeliama garso banga…",
+        "loadError": "Nepavyko įkelti šio failo",
+        "playbackUnavailable": "Šio formato atkurti negalima. Vis tiek galite apkarpyti pagal laiką."
     },
     "merger": {
         "addFiles": "Pridėti failus",
