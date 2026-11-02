@@ -31,6 +31,26 @@ A Windows desktop application for downloading, trimming, and merging audio/video
 -   npm v10+
 -   Windows
 
+### Dependency install scripts
+
+npm 12+ blocks dependency install scripts unless they are approved in the `allowScripts` field of `package.json`. The approved entries are:
+
+-   `electron-winstaller`: its install script selects the 7-Zip binary that the Squirrel installer needs. The approval is pinned to the reviewed version (e.g. `electron-winstaller@5.4.0`).
+
+When a dependency update brings a new `electron-winstaller` version, the pinned approval no longer matches and its script is skipped:
+
+-   `npm install` / `npm ci` ends with `install scripts blocked ... electron-winstaller@x.y.z`
+-   `npm run make` / `npm run publish` then fails in Squirrel with `System.ComponentModel.Win32Exception: The system cannot find the file specified`
+
+To fix it, review and approve the new version, commit `package.json`, and reinstall:
+
+```bash
+npm install-scripts approve electron-winstaller
+npm ci
+```
+
+Run `npm install-scripts ls` to list any other dependencies whose install scripts are blocked.
+
 ## Getting Started
 
 Install dependencies:
@@ -134,16 +154,24 @@ src/
 │   ├── downloadService.ts   # yt-dlp download logic
 │   ├── trimService.ts       # ffmpeg trim logic
 │   ├── mergeService.ts      # ffmpeg merge logic
+│   ├── mediaService.ts      # media:// file streaming + waveform peaks via ffmpeg
 │   ├── historyService.ts    # Download history persistence
-│   └── settingsService.ts   # App settings persistence
+│   ├── settingsService.ts   # App settings persistence
+│   └── tools.ts             # Paths to the bundled yt-dlp/ffmpeg binaries
+├── shared/
+│   └── media.ts             # Media types/extensions + media:// URL helpers (main + renderer)
 └── renderer/
     ├── renderer.tsx         # React entry point
+    ├── App.tsx              # Tab-based layout with the feature tabs
     ├── index.css            # Tailwind entry + @theme token mappings
     ├── i18n.ts              # i18next setup and language detection
+    ├── env.d.ts             # Shared renderer types + window.electronAPI typing
+    ├── vite-env.d.ts        # Vite client types
     ├── config/
     │   ├── design.ts        # Global design tokens (colors, radius, fonts)
     │   └── apply-design.ts  # Applies tokens as CSS variables at startup
     ├── components/
+    │   ├── ConfirmButton.tsx  # Button with a confirmation dialog
     │   └── ui/              # shadcn components (added via CLI)
     ├── features/
     │   ├── youtubeDownloader/  # YouTube download tab
