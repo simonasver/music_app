@@ -6,8 +6,8 @@ import { useTrimmerPlayer } from "../hooks/useTrimmerPlayer";
 import { FileDropZone } from "./FileDropZone";
 import { PlaybackControls } from "./PlaybackControls";
 import { TrimControls } from "./TrimControls";
-import { VideoPreview } from "./VideoPreview";
-import { Waveform } from "./Waveform";
+import { VideoPreview } from "@/components/media/VideoPreview";
+import { Waveform } from "@/components/media/Waveform";
 
 export function Trimmer() {
     const { t } = useTranslation();

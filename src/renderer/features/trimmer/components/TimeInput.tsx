@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { TRIM_NUDGE_STEPS } from "../lib/steps";
-import { formatTime, parseTime } from "../lib/time";
-import { StepButtons } from "./StepButtons";
+import { TRIM_NUDGE_STEPS } from "@/lib/steps";
+import { formatTime, parseTime } from "@/lib/time";
+import { StepButtons } from "@/components/media/StepButtons";
 
 interface TimeInputProps {
     id: string;

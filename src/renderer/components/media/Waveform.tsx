@@ -6,15 +6,17 @@ interface WaveformProps {
     ref: Ref<HTMLDivElement>;
     isLoaded: boolean;
     isLoading: boolean;
+    className?: string;
 }
 
-export function Waveform({ ref, isLoaded, isLoading }: WaveformProps) {
+export function Waveform({ ref, isLoaded, isLoading, className }: WaveformProps) {
     return (
         <div className="relative">
             <div
                 className={cn(
                     "min-h-[120px] rounded-md border border-border bg-muted/30 px-3 py-3 transition-opacity",
                     !isLoaded && "opacity-40 pointer-events-none",
+                    className,
                 )}
                 ref={ref}
             />

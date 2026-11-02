@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { formatTime } from "../lib/time";
+import { formatTime } from "@/lib/time";
 import { TimeInput } from "./TimeInput";
 
 interface TrimControlsProps {

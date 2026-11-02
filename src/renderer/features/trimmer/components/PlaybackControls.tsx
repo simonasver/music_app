@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { Pause, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SKIP_STEPS } from "../lib/steps";
-import { formatTime } from "../lib/time";
-import { StepButtons } from "./StepButtons";
+import { SKIP_STEPS } from "@/lib/steps";
+import { formatTime } from "@/lib/time";
+import { StepButtons } from "@/components/media/StepButtons";
 
 interface PlaybackControlsProps {
     isPlaying: boolean;

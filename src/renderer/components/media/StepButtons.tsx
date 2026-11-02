@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { formatStep, mirrorSteps } from "../lib/steps";
+import { formatStep, mirrorSteps } from "@/lib/steps";
 
 interface StepButtonsProps {
     /** Step sizes in increasing order */
