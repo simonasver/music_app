@@ -1,6 +1,6 @@
 import { type RefObject, useEffect, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
-import RegionsPlugin, { type Region } from "wavesurfer.js/dist/plugins/regions";
+import RegionsPlugin, { type Region } from "wavesurfer.js/dist/plugins/regions.esm.js";
 import { mediaUrl } from "@shared/media";
 
 /** Playhead within this distance of the region end counts as "at the end" */
