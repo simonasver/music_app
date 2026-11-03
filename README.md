@@ -197,3 +197,4 @@ src/
 7. Normalize download information width so that time left would not jump around when speed changes.
 8. Convert displayed date into the correct format for user in download history.
 9. Update "merge" to work with different file types and different resolutions.
+10. Sync running trim/merge process with frontend to show progress information and "Cancel" button.
