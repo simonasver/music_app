@@ -67,6 +67,7 @@
         "lucide-react": "^1.66.0",
         "react": "^19.3.1",
         "react-dom": "^19.3.1",
+        "react-easy-crop": "^6.2.4",
         "react-i18next": "^17.1.11",
         "tailwind-merge": "^3.7.0",
         "tailwindcss": "^4.3.3",
