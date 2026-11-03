@@ -3,6 +3,7 @@
         "youtubeDownloader": "YouTube Downloader",
         "trim": "Trim",
         "merge": "Merge",
+        "thumbnail": "Thumbnail",
         "settings": "Settings"
     },
     "settings": {
@@ -99,6 +100,31 @@
         "play": "Play",
         "pause": "Pause",
         "totalDuration": "Total"
+    },
+    "thumbnail": {
+        "mediaFile": "Audio file",
+        "selectFile": "Select MP3",
+        "changeFile": "Change File",
+        "mp3Only": "Only MP3 files are supported for now",
+        "unsupportedFormat": "Only MP3 files are supported for thumbnails",
+        "currentCover": "Current thumbnail",
+        "loadingCover": "Loading…",
+        "noCover": "No thumbnail",
+        "image": "New thumbnail",
+        "selectImage": "Select Image",
+        "changeImage": "Change Image",
+        "imageHint": "JPG, PNG, WEBP or BMP — or paste with Ctrl+V",
+        "unsupportedImage": "Unsupported image format. Use JPG, PNG, WEBP or BMP",
+        "loadingImage": "Loading image…",
+        "imageLoadError": "Could not load this image",
+        "cropHint": "Drag to move, scroll to zoom",
+        "zoom": "Zoom",
+        "clipboardEmpty": "No image in clipboard",
+        "replaceOriginal": "Replace original file",
+        "embed": "Add Thumbnail",
+        "embedding": "Adding…",
+        "embedComplete": "Saved to {{path}}",
+        "embedError": "Adding thumbnail failed"
     },
     "common": {
         "areYouSure": "Are you sure?",
