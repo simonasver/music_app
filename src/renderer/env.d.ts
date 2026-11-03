@@ -51,6 +51,16 @@ declare global {
             }): Promise<{ outputPath: string }>;
             saveFile(): Promise<string | null>;
             getPathForFile(file: File): string;
+            embedThumbnail(params: {
+                mediaPath: string;
+                imagePath: string;
+                crop: { x: number; y: number; width: number; height: number };
+                replaceOriginal: boolean;
+            }): Promise<{ outputPath: string }>;
+            getThumbnail(mediaPath: string): Promise<string | null>;
+            pasteThumbnailImage(): Promise<string | null>;
+            selectThumbnailMediaFile(): Promise<string | null>;
+            selectImageFile(): Promise<string | null>;
         };
     }
 }

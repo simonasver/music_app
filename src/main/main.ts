@@ -7,7 +7,13 @@ import * as downloadService from "./downloadService";
 import * as trimService from "./trimService";
 import * as mergeService from "./mergeService";
 import * as mediaService from "./mediaService";
-import { MEDIA_EXTENSIONS, MEDIA_SCHEME } from "../shared/media";
+import * as thumbnailService from "./thumbnailService";
+import {
+    IMAGE_EXTENSIONS,
+    MEDIA_EXTENSIONS,
+    MEDIA_SCHEME,
+    THUMBNAIL_EXTENSIONS,
+} from "../shared/media";
 import * as historyService from "./historyService";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -197,4 +203,28 @@ function registerIpcHandlers() {
     ipcMain.handle("media:peaks", (_event, filePath: string) =>
         mediaService.computePeaks(filePath),
     );
+
+    ipcMain.handle("thumbnail:embed", (_event, params) => thumbnailService.embedThumbnail(params));
+
+    ipcMain.handle("thumbnail:get", (_event, mediaPath: string) =>
+        thumbnailService.getThumbnail(mediaPath),
+    );
+
+    ipcMain.handle("thumbnail:paste", () => thumbnailService.saveClipboardImage());
+
+    ipcMain.handle("dialog:select-thumbnail-media", async () => {
+        const result = await dialog.showOpenDialog({
+            properties: ["openFile"],
+            filters: [{ name: "MP3", extensions: THUMBNAIL_EXTENSIONS }],
+        });
+        return result.canceled ? null : result.filePaths[0];
+    });
+
+    ipcMain.handle("dialog:select-image", async () => {
+        const result = await dialog.showOpenDialog({
+            properties: ["openFile"],
+            filters: [{ name: "Images", extensions: IMAGE_EXTENSIONS }],
+        });
+        return result.canceled ? null : result.filePaths[0];
+    });
 }
