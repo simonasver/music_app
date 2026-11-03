@@ -12,5 +12,5 @@ export function ffmpegPath(): string {
 }
 
 export function ytDlpPath(): string {
-    return path.join(toolsDir(), "yt-dlp.exe");
+    return path.join(toolsDir(), "yt-dlp", "yt-dlp.exe");
 }
