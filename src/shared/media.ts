@@ -21,6 +21,10 @@ export const AUDIO_EXTENSIONS = MEDIA_EXTENSIONS.filter((ext) =>
     MEDIA_TYPES[ext].startsWith("audio/"),
 );
 
+export const THUMBNAIL_EXTENSIONS = ["mp3"];
+
+export const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "webp", "bmp"];
+
 export function fileExtension(name: string): string {
     const dot = name.lastIndexOf(".");
     return dot === -1 ? "" : name.slice(dot + 1).toLowerCase();
@@ -28,6 +32,14 @@ export function fileExtension(name: string): string {
 
 export function isMediaFileName(name: string): boolean {
     return fileExtension(name) in MEDIA_TYPES;
+}
+
+export function isThumbnailSupported(name: string): boolean {
+    return THUMBNAIL_EXTENSIONS.includes(fileExtension(name));
+}
+
+export function isImageFileName(name: string): boolean {
+    return IMAGE_EXTENSIONS.includes(fileExtension(name));
 }
 
 export function mediaMimeType(name: string): string {

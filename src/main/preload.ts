@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer, webUtils } from "electron";
 import type { AppSettings } from "./settingsService";
 import type { HistoryEntry } from "./historyService";
+import type { EmbedThumbnailParams, EmbedThumbnailResult } from "./thumbnailService";
 
 contextBridge.exposeInMainWorld("electronAPI", {
     getSettings: (): Promise<AppSettings> => ipcRenderer.invoke("settings:get"),
@@ -69,4 +70,17 @@ contextBridge.exposeInMainWorld("electronAPI", {
     saveFile: (): Promise<string | null> => ipcRenderer.invoke("dialog:save-file"),
 
     getPathForFile: (file: File): string => webUtils.getPathForFile(file),
+
+    embedThumbnail: (params: EmbedThumbnailParams): Promise<EmbedThumbnailResult> =>
+        ipcRenderer.invoke("thumbnail:embed", params),
+
+    getThumbnail: (mediaPath: string): Promise<string | null> =>
+        ipcRenderer.invoke("thumbnail:get", mediaPath),
+
+    pasteThumbnailImage: (): Promise<string | null> => ipcRenderer.invoke("thumbnail:paste"),
+
+    selectThumbnailMediaFile: (): Promise<string | null> =>
+        ipcRenderer.invoke("dialog:select-thumbnail-media"),
+
+    selectImageFile: (): Promise<string | null> => ipcRenderer.invoke("dialog:select-image"),
 });

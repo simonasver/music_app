@@ -8,7 +8,7 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default defineConfig([
-    globalIgnores([".vite/", "out/"]),
+    globalIgnores([".vite/", "out/", "resources/"]),
     {
         files: ["**/*.{ts,tsx}"],
         extends: [

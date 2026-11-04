@@ -3,6 +3,7 @@
         "youtubeDownloader": "YouTube atsisiuntimas",
         "trim": "Apkarpymas",
         "merge": "Sujungimas",
+        "thumbnail": "Viršelis",
         "settings": "Nustatymai"
     },
     "settings": {
@@ -99,6 +100,31 @@
         "play": "Groti",
         "pause": "Pristabdyti",
         "totalDuration": "Viso"
+    },
+    "thumbnail": {
+        "mediaFile": "Garso failas",
+        "selectFile": "Pasirinkti MP3",
+        "changeFile": "Keisti failą",
+        "mp3Only": "Kol kas palaikomi tik MP3 failai",
+        "unsupportedFormat": "Viršeliai palaikomi tik MP3 failams",
+        "currentCover": "Dabartinis viršelis",
+        "loadingCover": "Įkeliama…",
+        "noCover": "Viršelio nėra",
+        "image": "Naujas viršelis",
+        "selectImage": "Pasirinkti paveikslėlį",
+        "changeImage": "Keisti paveikslėlį",
+        "imageHint": "JPG, PNG, WEBP arba BMP — arba įklijuokite su Ctrl+V",
+        "unsupportedImage": "Nepalaikomas paveikslėlio formatas. Naudokite JPG, PNG, WEBP arba BMP",
+        "loadingImage": "Įkeliamas paveikslėlis…",
+        "imageLoadError": "Nepavyko įkelti šio paveikslėlio",
+        "cropHint": "Vilkite, kad perkeltumėte, slinkite, kad priartintumėte",
+        "zoom": "Mastelis",
+        "clipboardEmpty": "Iškarpinėje nėra paveikslėlio",
+        "replaceOriginal": "Pakeisti originalų failą",
+        "embed": "Pridėti viršelį",
+        "embedding": "Pridedama…",
+        "embedComplete": "Išsaugota į {{path}}",
+        "embedError": "Pridėti viršelio nepavyko"
     },
     "common": {
         "areYouSure": "Ar tikrai?",

@@ -7,6 +7,7 @@ A Windows desktop application for downloading, trimming, and merging audio/video
 - **YouTube Downloader** — download audio (MP3) or video (MP4) from YouTube URLs using yt-dlp, with real-time progress tracking and download history
 - **Trimmer** — trim audio/video files to a specific time range using ffmpeg
 - **Merger** — merge multiple audio/video files into one using ffmpeg
+- **Thumbnail** — add or replace the embedded cover image of MP3 files; position and zoom the image in a square crop frame, pick/drop/paste (Ctrl+V) the image, and preview the current cover
 - **Settings** — configure download output folder, yt-dlp flags for MP3/MP4, UI theme (light/dark/system), and language (English/Lithuanian)
 
 > **Windows only.** Bundled `yt-dlp.exe` and `ffmpeg.exe` executables are Windows binaries — macOS and Linux are not supported.
@@ -155,6 +156,7 @@ src/
 │   ├── trimService.ts       # ffmpeg trim logic
 │   ├── mergeService.ts      # ffmpeg merge logic
 │   ├── mediaService.ts      # media:// file streaming + waveform peaks via ffmpeg
+│   ├── thumbnailService.ts  # ffmpeg cover art: crop image, embed into MP3, read current cover
 │   ├── historyService.ts    # Download history persistence
 │   ├── settingsService.ts   # App settings persistence
 │   └── tools.ts             # Paths to the bundled yt-dlp/ffmpeg binaries
@@ -177,6 +179,7 @@ src/
     │   ├── youtubeDownloader/  # YouTube download tab
     │   ├── trimmer/            # Trim tab
     │   ├── merger/             # Merge tab
+    │   ├── thumbnail/          # Thumbnail tab (cover art editor)
     │   └── settings/           # Settings tab
     ├── lib/
     │   ├── utils.ts         # cn() helper (clsx + tailwind-merge)
