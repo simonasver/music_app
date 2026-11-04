@@ -6,14 +6,12 @@ import { DropPanel } from "./DropPanel";
 
 interface MediaFileCardProps {
     mediaPath: string | null;
-    coverVersion: number;
     onFile: (path: string) => void;
     disabled: boolean;
 }
 
-function useCurrentCover(mediaPath: string | null, coverVersion: number) {
-    const key = `${mediaPath}#${coverVersion}`;
-    const [cover, setCover] = useState<{ key: string; url: string | null } | null>(null);
+function useCurrentCover(mediaPath: string | null) {
+    const [cover, setCover] = useState<{ path: string; url: string | null } | null>(null);
 
     useEffect(() => {
         if (!mediaPath) return;
@@ -22,21 +20,21 @@ function useCurrentCover(mediaPath: string | null, coverVersion: number) {
             .getThumbnail(mediaPath)
             .catch(() => null)
             .then((url) => {
-                if (!cancelled) setCover({ key, url });
+                if (!cancelled) setCover({ path: mediaPath, url });
             });
         return () => {
             cancelled = true;
         };
-    }, [key, mediaPath]);
+    }, [mediaPath]);
 
     // undefined while loading, null when the file has no cover
-    return cover?.key === key ? cover.url : undefined;
+    return cover?.path === mediaPath ? cover.url : undefined;
 }
 
-export function MediaFileCard({ mediaPath, coverVersion, onFile, disabled }: MediaFileCardProps) {
+export function MediaFileCard({ mediaPath, onFile, disabled }: MediaFileCardProps) {
     const { t } = useTranslation();
     const [isRejected, setIsRejected] = useState(false);
-    const coverUrl = useCurrentCover(mediaPath, coverVersion);
+    const coverUrl = useCurrentCover(mediaPath);
 
     function accept(path: string) {
         setIsRejected(false);

@@ -15,7 +15,6 @@ export function Thumbnail() {
     const [cropArea, setCropArea] = useState<Area | null>(null);
     const [replaceOriginal, setReplaceOriginal] = useState(false);
     const [isEmbedding, setIsEmbedding] = useState(false);
-    const [coverVersion, setCoverVersion] = useState(0);
 
     const rootRef = useRef<HTMLDivElement>(null);
 
@@ -58,8 +57,7 @@ export function Thumbnail() {
                 replaceOriginal,
             });
             showToast(t("thumbnail.embedComplete", { path: result.outputPath }));
-            setMediaPath(result.outputPath);
-            setCoverVersion((v) => v + 1);
+            handleReset();
         } catch {
             showToast(t("thumbnail.embedError"));
         } finally {
@@ -71,8 +69,8 @@ export function Thumbnail() {
         <div ref={rootRef} className="flex flex-col h-full p-6 gap-6">
             <div className="grid flex-1 min-h-0 gap-6 grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
                 <MediaFileCard
+                    key={mediaPath ?? ""}
                     mediaPath={mediaPath}
-                    coverVersion={coverVersion}
                     onFile={setMediaPath}
                     disabled={isEmbedding}
                 />
