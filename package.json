@@ -1,7 +1,7 @@
 {
     "name": "music_app",
     "productName": "music_app",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "Music app",
     "main": ".vite/build/main.cjs",
     "private": true,
