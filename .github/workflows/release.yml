@@ -2,8 +2,10 @@ name: Release
 
 on:
     push:
-        tags:
-            - "v*.*.*"
+        branches:
+            - main
+        paths:
+            - package.json
 
 jobs:
     build-and-release:
@@ -15,17 +17,37 @@ jobs:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
+              with:
+                  lfs: true
+
+            - name: Check if release already exists
+              id: check
+              shell: bash
+              run: |
+                  VERSION=$(node -p "require('./package.json').version")
+                  if gh release view "v$VERSION" > /dev/null 2>&1; then
+                      echo "Release v$VERSION already exists, skipping."
+                      echo "exists=true" >> "$GITHUB_OUTPUT"
+                  else
+                      echo "Releasing v$VERSION."
+                      echo "exists=false" >> "$GITHUB_OUTPUT"
+                  fi
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Set up Node.js
+              if: steps.check.outputs.exists == 'false'
               uses: actions/setup-node@v4
               with:
                   node-version: "24.15.0"
                   cache: "npm"
 
             - name: Install dependencies
+              if: steps.check.outputs.exists == 'false'
               run: npm ci
 
             - name: Publish to GitHub Releases
+              if: steps.check.outputs.exists == 'false'
               run: npm run publish
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
