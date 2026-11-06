@@ -2,7 +2,7 @@ import { app, BrowserWindow, ipcMain, dialog, shell, Menu, protocol } from "elec
 import fs from "node:fs";
 import path from "node:path";
 import started from "electron-squirrel-startup";
-import { updateElectronApp, UpdateSourceType } from "update-electron-app";
+import { updateElectronApp } from "update-electron-app";
 import * as settingsService from "./settingsService";
 import * as downloadService from "./downloadService";
 import * as trimService from "./trimService";
@@ -22,11 +22,7 @@ if (started) {
     app.quit();
 }
 
-updateElectronApp({
-    updateSource: {
-        type: UpdateSourceType.ElectronPublicUpdateService,
-    },
-});
+updateElectronApp();
 
 protocol.registerSchemesAsPrivileged([
     {
