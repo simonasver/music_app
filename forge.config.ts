@@ -24,7 +24,7 @@ const config: ForgeConfig = {
                 name: "music_app",
             },
             prerelease: false,
-            draft: true,
+            draft: false,
         }),
     ],
     plugins: [
