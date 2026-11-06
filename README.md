@@ -30,6 +30,7 @@ A Windows desktop application for downloading, trimming, and merging audio/video
 
 - [Node.js](https://nodejs.org/) v22.13+
 - npm v10+
+- [Git LFS](https://git-lfs.com/)
 - Windows
 
 ### Dependency install scripts
@@ -51,6 +52,22 @@ npm ci
 ```
 
 Run `npm install-scripts ls` to list any other dependencies whose install scripts are blocked.
+
+### Bundled binaries (Git LFS)
+
+The bundled tools in `resources/tools/` (`ffmpeg.exe` and the `yt-dlp` build) are stored with Git LFS, as configured in `.gitattributes`. Install Git LFS once before cloning:
+
+```bash
+git lfs install
+```
+
+If the repository was cloned without Git LFS, the files in `resources/tools/` are small text pointers instead of executables, and downloads, trims, and merges fail. Fetch the real files with:
+
+```bash
+git lfs pull
+```
+
+Run `git lfs ls-files` to list the tracked files. New or updated files placed under `resources/tools/` are tracked by LFS automatically. CI release builds check out with `lfs: true` (`.github/workflows/release.yml`).
 
 ## Getting Started
 
