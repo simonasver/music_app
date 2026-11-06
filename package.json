@@ -1,7 +1,7 @@
 {
     "name": "music_app",
     "productName": "music_app",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "description": "Music app",
     "repository": {
         "type": "git",
