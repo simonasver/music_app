@@ -46,6 +46,7 @@
         "urlPlaceholder": "Enter youtube url",
         "downloadMp3": "Download MP3",
         "downloadMp4": "Download MP4",
+        "downloadRaw": "Download raw",
         "cancel": "Cancel",
         "eta": "ETA",
         "downloadComplete": "Download complete",

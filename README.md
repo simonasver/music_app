@@ -220,5 +220,4 @@ src/
 10. Sync running trim/merge process with frontend to show progress information and "Cancel" button.
 11. Do not automatically close trimming after completing. Use case - trimming large file multiple times and additionally trimming smaller files for more accuracy.
 12. Fix no bottom padding when overflow.
-13. Implement a button to download without any tags.
-14. Implement mp4 to mp3 converter or at least an option to convert to mp3 when saving from trim.
+13. Implement mp4 to mp3 converter or at least an option to convert to mp3 when saving from trim.
