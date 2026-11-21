@@ -46,6 +46,7 @@
         "urlPlaceholder": "Įveskite youtube nuorodą",
         "downloadMp3": "Atsisiųsti MP3",
         "downloadMp4": "Atsisiųsti MP4",
+        "downloadRaw": "Atsisiųsti be nustatymų",
         "cancel": "Atšaukti",
         "eta": "Likęs laikas",
         "downloadComplete": "Atsisiuntimas baigtas",

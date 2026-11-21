@@ -162,6 +162,13 @@ export function YoutubeDownloader({ settings }: Props) {
                 >
                     {t("downloader.downloadMp4")}
                 </Button>
+                <Button
+                    variant="outline"
+                    disabled={isDownloading || !url.trim()}
+                    onClick={() => handleDownload("")}
+                >
+                    {t("downloader.downloadRaw")}
+                </Button>
                 {isDownloading && (
                     <Button variant="destructive" onClick={handleCancel}>
                         {t("downloader.cancel")}
