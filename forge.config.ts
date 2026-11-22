@@ -16,7 +16,10 @@ const config: ForgeConfig = {
         ],
         icon: "assets/icon",
     },
-    rebuildConfig: {},
+    rebuildConfig: {
+        // better-sqlite3 ships Node-API prebuilds that work in Electron without compiling.
+        ignoreModules: ["better-sqlite3"],
+    },
     makers: [
         new MakerSquirrel({
             setupIcon: "assets/icon.ico",

@@ -1,6 +1,7 @@
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import { app } from "electron";
+import { app, shell } from "electron";
 import { desc, eq } from "drizzle-orm";
 import * as database from "./db/database";
 import { history } from "./db/schema";
@@ -10,10 +11,15 @@ export interface HistoryEntry {
     url: string;
     date: string;
     name?: string;
+    filePath?: string;
+}
+
+export interface HistoryListEntry extends HistoryEntry {
+    fileExists: boolean;
 }
 
 export interface HistoryPage {
-    entries: HistoryEntry[];
+    entries: HistoryListEntry[];
     hasMore: boolean;
 }
 
@@ -80,17 +86,17 @@ export function importLegacyHistory(): void {
     }
 }
 
-export function appendHistoryEntry(entry: HistoryEntry): void {
-    database
-        .getDb()
-        .insert(history)
-        .values({
-            id: entry.id,
-            url: entry.url,
-            date: entry.date,
-            name: entry.name ?? null,
-        })
-        .run();
+export function recordDownload(url: string, filePaths: string[]): void {
+    const now = Date.now();
+    const rows = (filePaths.length ? filePaths : [null]).map((filePath, index) => ({
+        id: crypto.randomUUID(),
+        url,
+        // Offset by index so files from one run keep their download order.
+        date: new Date(now + index).toISOString(),
+        name: filePath ? path.basename(filePath) : null,
+        filePath,
+    }));
+    database.getDb().insert(history).values(rows).run();
 }
 
 export function getHistoryPage(offset = 0, limit = DEFAULT_PAGE_SIZE): HistoryPage {
@@ -109,9 +115,34 @@ export function getHistoryPage(offset = 0, limit = DEFAULT_PAGE_SIZE): HistoryPa
             url: row.url,
             date: row.date,
             name: row.name ?? undefined,
+            filePath: row.filePath ?? undefined,
+            fileExists: row.filePath ? fs.existsSync(row.filePath) : false,
         })),
         hasMore: rows.length > limit,
     };
+}
+
+function existingFilePath(id: string): string | null {
+    const row = database
+        .getDb()
+        .select({ filePath: history.filePath })
+        .from(history)
+        .where(eq(history.id, id))
+        .get();
+    return row?.filePath && fs.existsSync(row.filePath) ? row.filePath : null;
+}
+
+export async function openHistoryFile(id: string): Promise<boolean> {
+    const filePath = existingFilePath(id);
+    if (!filePath) return false;
+    return (await shell.openPath(filePath)) === "";
+}
+
+export function showHistoryFileInFolder(id: string): boolean {
+    const filePath = existingFilePath(id);
+    if (!filePath) return false;
+    shell.showItemInFolder(filePath);
+    return true;
 }
 
 export function deleteHistoryEntry(id: string): void {

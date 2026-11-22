@@ -49,12 +49,6 @@ export function YoutubeDownloader({ settings }: Props) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_errorLine, setErrorLine] = useState<string | null>(null);
     const bottomRef = useRef<HTMLDivElement>(null);
-    const pendingUrlRef = useRef<string>("");
-    const progressRef = useRef<DownloadProgress>(defaultProgress);
-
-    useEffect(() => {
-        progressRef.current = progress;
-    }, [progress]);
 
     const resetHistory = useCallback(() => {
         if (historyLoadingRef.current) {
@@ -105,14 +99,7 @@ export function YoutubeDownloader({ settings }: Props) {
                     eta: "",
                 }));
 
-                window.electronAPI
-                    .appendHistory({
-                        id: crypto.randomUUID(),
-                        url: pendingUrlRef.current,
-                        date: new Date().toISOString(),
-                        name: progressRef.current.filename ?? undefined,
-                    })
-                    .then(resetHistory);
+                resetHistory();
 
                 toast.show(t("downloader.downloadComplete"));
             } else {
@@ -135,15 +122,14 @@ export function YoutubeDownloader({ settings }: Props) {
             return;
         }
 
-        pendingUrlRef.current = url.trim();
-        progressRef.current = defaultProgress;
+        const downloadUrl = url.trim();
         setUrl("");
         setOutputLines([]);
         setProgress(defaultProgress);
         setErrorLine(null);
         setIsDownloading(true);
         window.electronAPI.startDownload(
-            pendingUrlRef.current,
+            downloadUrl,
             flags,
             settings.youtubeDownloaderSettings.downloadFileLocation,
         );

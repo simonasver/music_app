@@ -159,7 +159,16 @@ function registerIpcHandlers() {
             flags,
             outputDir,
             (line: string) => event.sender.send("download:output", line),
-            (code: number | null) => event.sender.send("download:complete", code),
+            (code: number | null, filePaths: string[]) => {
+                if (code === 0) {
+                    try {
+                        historyService.recordDownload(url, filePaths);
+                    } catch (err) {
+                        console.error("Failed to save download history:", err);
+                    }
+                }
+                event.sender.send("download:complete", code);
+            },
         );
     });
 
@@ -172,7 +181,6 @@ function registerIpcHandlers() {
         return result.canceled ? null : result.filePaths[0];
     });
 
-    ipcMain.handle("history:append", (_event, entry) => historyService.appendHistoryEntry(entry));
     ipcMain.handle("history:get-page", (_event, offset: number) =>
         historyService.getHistoryPage(offset),
     );
@@ -180,6 +188,10 @@ function registerIpcHandlers() {
         historyService.deleteHistoryEntry(id),
     );
     ipcMain.handle("history:delete-all", () => historyService.deleteAllHistory());
+    ipcMain.handle("history:open-file", (_event, id: string) => historyService.openHistoryFile(id));
+    ipcMain.handle("history:show-in-folder", (_event, id: string) =>
+        historyService.showHistoryFileInFolder(id),
+    );
     ipcMain.handle("shell:open-url", (_event, url: string) => shell.openExternal(url));
 
     ipcMain.handle("dialog:select-media-file", async (_event, { multi }: { multi: boolean }) => {

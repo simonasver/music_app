@@ -24,6 +24,12 @@ export function DownloadHistory({ entries, hasMore, onLoadMore, onRefresh }: Pro
         }
     }, [inView, hasMore, onLoadMore]);
 
+    async function handleFileAction(action: (id: string) => Promise<boolean>, id: string) {
+        if (!(await action(id))) {
+            toast.show(t("history.fileNotFound"));
+        }
+    }
+
     async function handleDelete(id: string) {
         await window.electronAPI.deleteHistoryEntry(id);
         onRefresh();
@@ -76,6 +82,31 @@ export function DownloadHistory({ entries, hasMore, onLoadMore, onRefresh }: Pro
                                 onClick={() => window.electronAPI.openExternal(entry.url)}
                             >
                                 {t("history.open")}
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-7 px-2 text-xs"
+                                disabled={!entry.fileExists}
+                                onClick={() =>
+                                    handleFileAction(window.electronAPI.openHistoryFile, entry.id)
+                                }
+                            >
+                                {t("history.openFile")}
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-7 px-2 text-xs"
+                                disabled={!entry.fileExists}
+                                onClick={() =>
+                                    handleFileAction(
+                                        window.electronAPI.showHistoryFileInFolder,
+                                        entry.id,
+                                    )
+                                }
+                            >
+                                {t("history.showInFolder")}
                             </Button>
                             <ConfirmButton
                                 size="sm"

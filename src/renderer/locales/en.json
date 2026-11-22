@@ -65,7 +65,10 @@
         "empty": "No history yet.",
         "copied": "Copied to clipboard",
         "copy": "Copy",
-        "open": "Open",
+        "open": "Open URL",
+        "openFile": "Open file",
+        "showInFolder": "Show in folder",
+        "fileNotFound": "File not found",
         "deleteConfirm": "Delete this entry?",
         "delete": "Delete",
         "entryDeleted": "Entry deleted"
