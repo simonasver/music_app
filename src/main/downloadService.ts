@@ -1,4 +1,7 @@
 import { exec, spawn, ChildProcess } from "node:child_process";
+import crypto from "node:crypto";
+import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { toolsDir, ytDlpPath } from "./tools";
 
@@ -38,12 +41,26 @@ function parseFlags(flagsString: string): string[] {
     return args;
 }
 
+function readFinalFilePaths(outputFile: string): string[] {
+    try {
+        return fs
+            .readFileSync(outputFile, "utf-8")
+            .split(/\r?\n/)
+            .map((line) => line.trim())
+            .filter(Boolean);
+    } catch {
+        return [];
+    } finally {
+        fs.rmSync(outputFile, { force: true });
+    }
+}
+
 export function startDownload(
     url: string,
     flagsString: string,
     outputDir: string,
     onData: (line: string) => void,
-    onExit: (code: number | null) => void,
+    onExit: (code: number | null, filePaths: string[]) => void,
 ): void {
     const dir = toolsDir();
     const flags = parseFlags(flagsString);
@@ -56,8 +73,16 @@ export function startDownload(
         'postprocess:{"type":"postprocess","status":"%(progress.status)s","processor":"%(progress.postprocessor)s"}',
     ];
 
+    const filePathsOutput = path.join(
+        os.tmpdir(),
+        `music_app-filepaths-${crypto.randomUUID()}.txt`,
+    );
+
     const args = [
         ...PROGRESS_FLAGS,
+        "--print-to-file",
+        "after_move:filepath",
+        filePathsOutput.replace(/%/g, "%%"),
         ...flags,
         "-o",
         path.join(outputDir, "%(title)s.%(ext)s"),
@@ -83,7 +108,7 @@ export function startDownload(
 
     activeProcess.on("close", (code) => {
         activeProcess = null;
-        onExit(code);
+        onExit(code, readFinalFilePaths(filePathsOutput));
     });
 }
 

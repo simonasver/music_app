@@ -8,10 +8,18 @@ import { FuseV1Options, FuseVersion } from "@electron/fuses";
 const config: ForgeConfig = {
     packagerConfig: {
         asar: true,
-        extraResource: ["resources/tools", "assets/icon.ico"],
+        extraResource: [
+            "resources/tools",
+            "assets/icon.ico",
+            "node_modules/better-sqlite3/prebuilds/win32-x64.node",
+            "drizzle",
+        ],
         icon: "assets/icon",
     },
-    rebuildConfig: {},
+    rebuildConfig: {
+        // better-sqlite3 ships Node-API prebuilds that work in Electron without compiling.
+        ignoreModules: ["better-sqlite3"],
+    },
     makers: [
         new MakerSquirrel({
             setupIcon: "assets/icon.ico",

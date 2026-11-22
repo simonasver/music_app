@@ -16,6 +16,7 @@ import {
     THUMBNAIL_EXTENSIONS,
 } from "../shared/media";
 import * as historyService from "./historyService";
+import * as database from "./db/database";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -123,6 +124,9 @@ const createWindow = () => {
 };
 
 app.on("ready", () => {
+    database.init();
+    // TODO: Remove in the next release, once users have migrated history.jsonl to SQLite.
+    historyService.importLegacyHistory();
     protocol.handle(MEDIA_SCHEME, mediaService.handleMediaRequest);
     createWindow();
     registerIpcHandlers();
@@ -132,6 +136,10 @@ app.on("window-all-closed", () => {
     if (process.platform !== "darwin") {
         app.quit();
     }
+});
+
+app.on("will-quit", () => {
+    database.close();
 });
 
 app.on("activate", () => {
@@ -151,7 +159,16 @@ function registerIpcHandlers() {
             flags,
             outputDir,
             (line: string) => event.sender.send("download:output", line),
-            (code: number | null) => event.sender.send("download:complete", code),
+            (code: number | null, filePaths: string[]) => {
+                if (code === 0) {
+                    try {
+                        historyService.recordDownload(url, filePaths);
+                    } catch (err) {
+                        console.error("Failed to save download history:", err);
+                    }
+                }
+                event.sender.send("download:complete", code);
+            },
         );
     });
 
@@ -164,12 +181,17 @@ function registerIpcHandlers() {
         return result.canceled ? null : result.filePaths[0];
     });
 
-    ipcMain.handle("history:append", (_event, entry) => historyService.appendHistoryEntry(entry));
-    ipcMain.handle("history:get-all", () => historyService.getAllHistory());
+    ipcMain.handle("history:get-page", (_event, offset: number) =>
+        historyService.getHistoryPage(offset),
+    );
     ipcMain.handle("history:delete-entry", (_event, id: string) =>
         historyService.deleteHistoryEntry(id),
     );
     ipcMain.handle("history:delete-all", () => historyService.deleteAllHistory());
+    ipcMain.handle("history:open-file", (_event, id: string) => historyService.openHistoryFile(id));
+    ipcMain.handle("history:show-in-folder", (_event, id: string) =>
+        historyService.showHistoryFileInFolder(id),
+    );
     ipcMain.handle("shell:open-url", (_event, url: string) => shell.openExternal(url));
 
     ipcMain.handle("dialog:select-media-file", async (_event, { multi }: { multi: boolean }) => {

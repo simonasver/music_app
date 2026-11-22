@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useInView } from "react-intersection-observer";
 import { Button } from "@/components/ui/button";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { useToast } from "@/lib/toast";
@@ -6,12 +8,27 @@ import type { HistoryEntry } from "../../../env";
 
 interface Props {
     entries: HistoryEntry[];
+    hasMore: boolean;
+    onLoadMore: () => void;
     onRefresh: () => void;
 }
 
-export function DownloadHistory({ entries, onRefresh }: Props) {
+export function DownloadHistory({ entries, hasMore, onLoadMore, onRefresh }: Props) {
     const { t } = useTranslation();
     const toast = useToast();
+    const { ref: sentinelRef, inView } = useInView({ scrollMargin: "200px" });
+
+    useEffect(() => {
+        if (inView && hasMore) {
+            onLoadMore();
+        }
+    }, [inView, hasMore, onLoadMore]);
+
+    async function handleFileAction(action: (id: string) => Promise<boolean>, id: string) {
+        if (!(await action(id))) {
+            toast.show(t("history.fileNotFound"));
+        }
+    }
 
     async function handleDelete(id: string) {
         await window.electronAPI.deleteHistoryEntry(id);
@@ -19,7 +36,7 @@ export function DownloadHistory({ entries, onRefresh }: Props) {
         toast.show(t("history.entryDeleted"));
     }
 
-    if (entries.length === 0) {
+    if (entries.length === 0 && !hasMore) {
         return (
             <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm">
                 {t("history.empty")}
@@ -66,6 +83,31 @@ export function DownloadHistory({ entries, onRefresh }: Props) {
                             >
                                 {t("history.open")}
                             </Button>
+                            <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-7 px-2 text-xs"
+                                disabled={!entry.fileExists}
+                                onClick={() =>
+                                    handleFileAction(window.electronAPI.openHistoryFile, entry.id)
+                                }
+                            >
+                                {t("history.openFile")}
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-7 px-2 text-xs"
+                                disabled={!entry.fileExists}
+                                onClick={() =>
+                                    handleFileAction(
+                                        window.electronAPI.showHistoryFileInFolder,
+                                        entry.id,
+                                    )
+                                }
+                            >
+                                {t("history.showInFolder")}
+                            </Button>
                             <ConfirmButton
                                 size="sm"
                                 className="h-7 px-2 text-xs text-destructive hover:text-destructive"
@@ -79,6 +121,7 @@ export function DownloadHistory({ entries, onRefresh }: Props) {
                         </div>
                     </div>
                 ))}
+                {hasMore && <div ref={sentinelRef} className="h-1 shrink-0" />}
             </div>
         </div>
     );

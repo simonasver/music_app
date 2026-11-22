@@ -65,7 +65,10 @@
         "empty": "Istorija tuščia.",
         "copied": "Nukopijuota į iškarpinę",
         "copy": "Kopijuoti",
-        "open": "Atidaryti",
+        "open": "Atidaryti nuorodą",
+        "openFile": "Atidaryti failą",
+        "showInFolder": "Rodyti aplanke",
+        "fileNotFound": "Failas nerastas",
         "deleteConfirm": "Ištrinti šį įrašą?",
         "delete": "Ištrinti",
         "entryDeleted": "Įrašas ištrintas"

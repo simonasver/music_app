@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer, webUtils } from "electron";
 import type { AppSettings } from "./settingsService";
-import type { HistoryEntry } from "./historyService";
+import type { HistoryPage } from "./historyService";
 import type { EmbedThumbnailParams, EmbedThumbnailResult } from "./thumbnailService";
 
 contextBridge.exposeInMainWorld("electronAPI", {
@@ -32,15 +32,18 @@ contextBridge.exposeInMainWorld("electronAPI", {
         return () => ipcRenderer.removeListener("download:complete", handler);
     },
 
-    appendHistory: (entry: HistoryEntry): Promise<void> =>
-        ipcRenderer.invoke("history:append", entry),
-
-    getAllHistory: (): Promise<HistoryEntry[]> => ipcRenderer.invoke("history:get-all"),
+    getHistoryPage: (offset: number): Promise<HistoryPage> =>
+        ipcRenderer.invoke("history:get-page", offset),
 
     deleteHistoryEntry: (id: string): Promise<void> =>
         ipcRenderer.invoke("history:delete-entry", id),
 
     deleteAllHistory: (): Promise<void> => ipcRenderer.invoke("history:delete-all"),
+
+    openHistoryFile: (id: string): Promise<boolean> => ipcRenderer.invoke("history:open-file", id),
+
+    showHistoryFileInFolder: (id: string): Promise<boolean> =>
+        ipcRenderer.invoke("history:show-in-folder", id),
 
     openExternal: (url: string): Promise<void> => ipcRenderer.invoke("shell:open-url", url),
 

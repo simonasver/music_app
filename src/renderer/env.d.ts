@@ -5,6 +5,13 @@ export interface HistoryEntry {
     url: string;
     date: string;
     name?: string;
+    filePath?: string;
+    fileExists: boolean;
+}
+
+export interface HistoryPage {
+    entries: HistoryEntry[];
+    hasMore: boolean;
 }
 
 export interface AppSettings {
@@ -30,10 +37,11 @@ declare global {
             selectFolder(): Promise<string | null>;
             onDownloadOutput(cb: (line: string) => void): () => void;
             onDownloadComplete(cb: (code: number | null) => void): () => void;
-            appendHistory(entry: HistoryEntry): Promise<void>;
-            getAllHistory(): Promise<HistoryEntry[]>;
+            getHistoryPage(offset: number): Promise<HistoryPage>;
             deleteHistoryEntry(id: string): Promise<void>;
             deleteAllHistory(): Promise<void>;
+            openHistoryFile(id: string): Promise<boolean>;
+            showHistoryFileInFolder(id: string): Promise<boolean>;
             openExternal(url: string): Promise<void>;
             selectMediaFile(): Promise<string | null>;
             executeTrim(params: {
