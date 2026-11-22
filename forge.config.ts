@@ -12,6 +12,7 @@ const config: ForgeConfig = {
             "resources/tools",
             "assets/icon.ico",
             "node_modules/better-sqlite3/prebuilds/win32-x64.node",
+            "drizzle",
         ],
         icon: "assets/icon",
     },

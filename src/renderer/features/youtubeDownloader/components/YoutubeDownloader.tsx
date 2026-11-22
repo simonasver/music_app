@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,6 +42,9 @@ export function YoutubeDownloader({ settings }: Props) {
     const [isDownloading, setIsDownloading] = useState(false);
     const [outputLines, setOutputLines] = useState<string[]>([]);
     const [history, setHistory] = useState<HistoryEntry[]>([]);
+    const [historyHasMore, setHistoryHasMore] = useState(true);
+    const historyLoadingRef = useRef(false);
+    const historyResetPendingRef = useRef(false);
     const [progress, setProgress] = useState<DownloadProgress>(defaultProgress);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_errorLine, setErrorLine] = useState<string | null>(null);
@@ -53,13 +56,34 @@ export function YoutubeDownloader({ settings }: Props) {
         progressRef.current = progress;
     }, [progress]);
 
-    function loadHistory() {
-        window.electronAPI.getAllHistory().then(setHistory);
-    }
+    const resetHistory = useCallback(() => {
+        if (historyLoadingRef.current) {
+            historyResetPendingRef.current = true;
+            return;
+        }
+        setHistory([]);
+        setHistoryHasMore(true);
+    }, []);
+
+    const loadNextHistoryPage = useCallback(() => {
+        if (!historyHasMore || historyLoadingRef.current) return;
+        historyLoadingRef.current = true;
+        window.electronAPI
+            .getHistoryPage(history.length)
+            .then((page) => {
+                setHistory((prev) => [...prev, ...page.entries]);
+                setHistoryHasMore(page.hasMore);
+            })
+            .finally(() => {
+                historyLoadingRef.current = false;
+                if (historyResetPendingRef.current) {
+                    historyResetPendingRef.current = false;
+                    resetHistory();
+                }
+            });
+    }, [history.length, historyHasMore, resetHistory]);
 
     useEffect(() => {
-        loadHistory();
-
         const unsubOutput = window.electronAPI.onDownloadOutput((line) => {
             setOutputLines((prev) => [...prev, line]);
 
@@ -88,7 +112,7 @@ export function YoutubeDownloader({ settings }: Props) {
                         date: new Date().toISOString(),
                         name: progressRef.current.filename ?? undefined,
                     })
-                    .then(loadHistory);
+                    .then(resetHistory);
 
                 toast.show(t("downloader.downloadComplete"));
             } else {
@@ -100,7 +124,7 @@ export function YoutubeDownloader({ settings }: Props) {
             unsubOutput();
             unsubComplete();
         };
-    }, [toast, t]);
+    }, [toast, t, resetHistory]);
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -231,7 +255,12 @@ export function YoutubeDownloader({ settings }: Props) {
                     value={DownloadInfoTab.History}
                     className="flex flex-col flex-1 mt-1 min-h-0"
                 >
-                    <DownloadHistory entries={history} onRefresh={loadHistory} />
+                    <DownloadHistory
+                        entries={history}
+                        hasMore={historyHasMore}
+                        onLoadMore={loadNextHistoryPage}
+                        onRefresh={resetHistory}
+                    />
                 </TabsContent>
                 <TabsContent value={DownloadInfoTab.Output} className="flex-1 mt-1 min-h-0">
                     <ScrollArea className="h-full rounded-md border border-border bg-muted/30">

@@ -209,15 +209,14 @@ src/
 ## TO-DO
 
 1. Add "open folder" next to download history
-2. Download history pagination
-3. Automatic trim split by pasted structure
-4. Make enabled download buttons more visible and different from the disabled ones. Cyan is too bright.
-5. Add thumbnail modification - add, change, remove
-6. Add semi-automatic split by chapters. Automatically load and display splits, additionally showing each item in a list, with changeable start, name (which will be saved to)
-7. Normalize download information width so that time left would not jump around when speed changes.
-8. Convert displayed date into the correct format for user in download history.
-9. Update "merge" to work with different file types and different resolutions.
-10. Sync running trim/merge process with frontend to show progress information and "Cancel" button.
-11. Do not automatically close trimming after completing. Use case - trimming large file multiple times and additionally trimming smaller files for more accuracy.
-12. Fix no bottom padding when overflow.
-13. Implement mp4 to mp3 converter or at least an option to convert to mp3 when saving from trim.
+2. Automatic trim split by pasted structure
+3. Make enabled download buttons more visible and different from the disabled ones. Cyan is too bright.
+4. Add thumbnail modification - add, change, remove
+5. Add semi-automatic split by chapters. Automatically load and display splits, additionally showing each item in a list, with changeable start, name (which will be saved to)
+6. Normalize download information width so that time left would not jump around when speed changes.
+7. Convert displayed date into the correct format for user in download history.
+8. Update "merge" to work with different file types and different resolutions.
+9. Sync running trim/merge process with frontend to show progress information and "Cancel" button.
+10. Do not automatically close trimming after completing. Use case - trimming large file multiple times and additionally trimming smaller files for more accuracy.
+11. Fix no bottom padding when overflow.
+12. Implement mp4 to mp3 converter or at least an option to convert to mp3 when saving from trim.

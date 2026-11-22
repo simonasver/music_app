@@ -124,6 +124,9 @@ const createWindow = () => {
 };
 
 app.on("ready", () => {
+    database.init();
+    // TODO: Remove in the next release, once users have migrated history.jsonl to SQLite.
+    historyService.importLegacyHistory();
     protocol.handle(MEDIA_SCHEME, mediaService.handleMediaRequest);
     createWindow();
     registerIpcHandlers();
@@ -170,7 +173,9 @@ function registerIpcHandlers() {
     });
 
     ipcMain.handle("history:append", (_event, entry) => historyService.appendHistoryEntry(entry));
-    ipcMain.handle("history:get-all", () => historyService.getAllHistory());
+    ipcMain.handle("history:get-page", (_event, offset: number) =>
+        historyService.getHistoryPage(offset),
+    );
     ipcMain.handle("history:delete-entry", (_event, id: string) =>
         historyService.deleteHistoryEntry(id),
     );

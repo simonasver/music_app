@@ -7,6 +7,11 @@ export interface HistoryEntry {
     name?: string;
 }
 
+export interface HistoryPage {
+    entries: HistoryEntry[];
+    hasMore: boolean;
+}
+
 export interface AppSettings {
     general: {
         language: string;
@@ -31,7 +36,7 @@ declare global {
             onDownloadOutput(cb: (line: string) => void): () => void;
             onDownloadComplete(cb: (code: number | null) => void): () => void;
             appendHistory(entry: HistoryEntry): Promise<void>;
-            getAllHistory(): Promise<HistoryEntry[]>;
+            getHistoryPage(offset: number): Promise<HistoryPage>;
             deleteHistoryEntry(id: string): Promise<void>;
             deleteAllHistory(): Promise<void>;
             openExternal(url: string): Promise<void>;
