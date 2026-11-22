@@ -9,6 +9,7 @@ Features:
 -   **YouTube Downloader** — download MP3/MP4 via yt-dlp, real-time progress, history
 -   **Trimmer** — trim audio/video with waveform visualization (WaveSurfer.js)
 -   **Merger** — merge multiple audio/video files via drag-and-drop
+-   **Thumbnail** — add or replace embedded MP3 cover art (crop, zoom, pick/drop/paste image)
 -   **Settings** — download folder, yt-dlp/ffmpeg flags, theme (light/dark/system), language (EN/LT)
 
 ## Tech Stack
@@ -22,41 +23,28 @@ Features:
 | i18n           | i18next + react-i18next (EN, LT)               |
 | Waveform       | WaveSurfer.js 8                                |
 | Drag-drop      | dnd-kit                                        |
+| Database       | SQLite (better-sqlite3) + Drizzle ORM          |
 | Packaging      | Electron Forge 8, Squirrel installer (Windows) |
 | External tools | yt-dlp, ffmpeg (bundled binaries)              |
 
 ## Architecture
 
-**Main process** (`src/main/`): IPC handlers, service layer for all business logic.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) (imported below). Other docs: `docs/DEVELOPMENT.md`, `docs/RELEASING.md`, `docs/TODO.md`.
 
--   `main.ts` — window creation, IPC handler registration
--   `preload.ts` — contextBridge exposing `electronAPI` to renderer
--   `downloadService.ts` — yt-dlp child process orchestration
--   `trimService.ts` / `mergeService.ts` / `splitService.ts` — ffmpeg operations
--   `settingsService.ts` / `historyService.ts` — JSON persistence in `userData/`
-
-**Renderer** (`src/renderer/`): React frontend, communicates only through `window.electronAPI`.
-
--   `App.tsx` — tab-based layout (Radix Tabs), 4 feature tabs
--   `features/` — self-contained feature folders (youtubeDownloader, trimmer, merger, settings)
--   `components/ui/` — shadcn/ui components
--   `lib/` — toast system, utilities
--   `locales/` — `en.json`, `lt.json` translation files
-
-**State**: React hooks (local), `userData/settings.json` (settings), `userData/history.json` (history), window state saved on close.
-
-**IPC flow**: Renderer calls `window.electronAPI.someMethod()` → contextBridge → main process service → spawns child process → streams events back via IPC.
+@docs/ARCHITECTURE.md
 
 ## Development
 
 ```bash
-npm start          # Dev mode with hot reload + DevTools
-npm run lint       # ESLint check
-npm run lint:fix   # ESLint auto-fix
-npm run format     # Prettier format
-npm run package    # Compile without installer → out/
-npm run make       # Windows Squirrel installer (runs lint + format first)
-npm run publish    # Publish to GitHub (requires token)
+npm start            # Dev mode with hot reload + DevTools
+npm run lint         # ESLint check
+npm run lint:fix     # ESLint auto-fix
+npm run format:check # Prettier check
+npm run format       # Prettier format
+npm run db:generate  # Generate Drizzle migration after editing src/main/db/schema.ts
+npm run package      # Compile without installer → out/
+npm run make         # Windows Squirrel installer (runs lint + format first)
+npm run publish      # Publish to GitHub (requires token)
 ```
 
 Lint and format checks run automatically before `make`/`package` and will abort on failure.
