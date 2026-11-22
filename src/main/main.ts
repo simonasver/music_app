@@ -16,6 +16,7 @@ import {
     THUMBNAIL_EXTENSIONS,
 } from "../shared/media";
 import * as historyService from "./historyService";
+import * as database from "./db/database";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -132,6 +133,10 @@ app.on("window-all-closed", () => {
     if (process.platform !== "darwin") {
         app.quit();
     }
+});
+
+app.on("will-quit", () => {
+    database.close();
 });
 
 app.on("activate", () => {

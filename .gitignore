@@ -93,3 +93,6 @@ out/
 
 # Claude
 .claude/
+
+# Sandbox
+shim-start.lock

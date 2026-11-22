@@ -8,7 +8,11 @@ import { FuseV1Options, FuseVersion } from "@electron/fuses";
 const config: ForgeConfig = {
     packagerConfig: {
         asar: true,
-        extraResource: ["resources/tools", "assets/icon.ico"],
+        extraResource: [
+            "resources/tools",
+            "assets/icon.ico",
+            "node_modules/better-sqlite3/prebuilds/win32-x64.node",
+        ],
         icon: "assets/icon",
     },
     rebuildConfig: {},
